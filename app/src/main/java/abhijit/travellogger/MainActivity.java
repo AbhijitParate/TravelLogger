@@ -24,15 +24,18 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
 
 
 //FAB Button Sizes
-    private static final int FAB_BUTTON_SIZE = 400;
+    private static final int FAB_BUTTON_SIZE = 500;
     private static final int FAB_SUB_BUTTON_SIZE = 230;
     private static final int FAB_SUB_BUTTON_DISTANCE = 400;
 
+    private static FloatingActionMenu actionMenu;
+
 //tags to select the appropriate activity
+    private static final String TAG_FAB = "Add new Photo, Video, Audio or Note.";
     private static final String TAG_CAMERA = "Still Camera";
     private static final String TAG_CAMCORDER = "Video Camera";
     private static final String TAG_AUDIO_RECORDER = "Audio Recorder";
@@ -40,13 +43,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //ImageView
     private ImageView ivCapturedImage;
 
-//for camera intent
+//for Camera Intent
     private static final int ACTIVITY_START_CAMERA_APP = 1;
     private String imageFileLocation ="";
 
-//For Video Camera
+//For Video Camera Intent
     private static final int ACTIVITY_START_VIDEO_CAMERA_APP = 2;
     private String videoFileLocation ="";
+
+//For Audio Recorder Intent
+    private static final int ACTIVITY_START_AUDIO_REC_APP = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         ivCapturedImage = (ImageView) findViewById(R.id.ivCapturedImage);
-
         this.buildFab();
     }
 
@@ -81,26 +86,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onLongClick(View v) {
+        switch (v.getTag().toString()) {
+            case (TAG_FAB):
+                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                break;
+            case (TAG_CAMERA):
+                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                break;
+          case (TAG_CAMCORDER):
+                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                break;
+            case (TAG_AUDIO_RECORDER):
+                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                break;
+            case (TAG_NOTE):
+                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public void onClick(View v) {
-
-        Toast.makeText(this, v.getTag()+" pressed.", Toast.LENGTH_SHORT ).show();
-
         switch (v.getTag().toString()) {
             case (TAG_CAMERA):
-                Toast.makeText(this, v.getTag() + " pressed.", Toast.LENGTH_SHORT).show();
                 takePhoto(ivCapturedImage);
                 break;
             case (TAG_CAMCORDER):
-                Toast.makeText(this, v.getTag() + " pressed.", Toast.LENGTH_SHORT).show();
                 takeVideo(ivCapturedImage);
                 break;
             case (TAG_AUDIO_RECORDER):
-                Toast.makeText(this, v.getTag() + " pressed.", Toast.LENGTH_SHORT).show();
-//                SnackBar.show(getActivity(), R.string.hello_world);
+                Snackbar.make(v, v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
                 break;
             case (TAG_NOTE):
-                Toast.makeText(this, v.getTag() + " pressed.", Toast.LENGTH_SHORT).show();
-                Snackbar.make(v , v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(v, v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }
@@ -134,6 +154,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
 
+            case ACTIVITY_START_AUDIO_REC_APP :
+                switch (resultCode) {
+                    case RESULT_OK :
+                        Toast.makeText(this, "Video saved successfully.\nLocation: " + videoFileLocation, Toast.LENGTH_SHORT).show();
+                        break;
+                    case RESULT_CANCELED:
+                        Toast.makeText(this, "Recording canceled.", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(this, "Recording failed.", Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }
@@ -199,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.fab_subbutton_selector))
                 .setLayoutParams(fab_params)
                 .build();
+        actionButton.setOnLongClickListener(this);
 
 //Create Sub menu items icons
         ImageView camera = new ImageView(this);
@@ -226,19 +259,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SubActionButton buttonNote = itemBuilder.setContentView(note).build();
 
 //Set tags to each sub button
+        actionButton.setTag(TAG_FAB);
         buttonCamera.setTag(TAG_CAMERA);
         buttonCamcorder.setTag(TAG_CAMCORDER);
         buttonAudioRecorder.setTag(TAG_AUDIO_RECORDER);
         buttonNote.setTag(TAG_NOTE);
 
-//Set onClickListener to all sub buttons
+//Set OnClickListener to all sub buttons
         buttonCamera.setOnClickListener(this);
         buttonCamcorder.setOnClickListener(this);
         buttonAudioRecorder.setOnClickListener(this);
         buttonNote.setOnClickListener(this);
 
+//Set OnLongClickListener
+        buttonCamera.setOnLongClickListener(this);
+        buttonCamcorder.setOnLongClickListener(this);
+        buttonAudioRecorder.setOnLongClickListener(this);
+        buttonNote.setOnLongClickListener(this);
+
+
 //Add the sub menu items to fab
-        FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(this)
+        actionMenu = new FloatingActionMenu.Builder(this)
                 .addSubActionView(buttonCamera)
                 .addSubActionView(buttonCamcorder)
                 .addSubActionView(buttonAudioRecorder)
@@ -247,4 +288,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setRadius(FAB_SUB_BUTTON_DISTANCE)
                 .build();
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+//To close the action Button on resume
+        if (actionMenu.isOpen()) {
+            actionMenu.close(true);
+        }
+    }
+
+
 }
