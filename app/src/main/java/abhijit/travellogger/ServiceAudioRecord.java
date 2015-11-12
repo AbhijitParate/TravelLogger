@@ -9,21 +9,22 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.NotificationCompat;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 
 public class ServiceAudioRecord extends Service {
 
@@ -31,8 +32,20 @@ public class ServiceAudioRecord extends Service {
     MediaRecorder recorder;
     File audioFile = null;
     NotificationCompat.Builder mBuilder;
+    private static Long startTime;
+//    private static Long stopTime;
+
+//    public static final String TAG = "BROADCAST_SERVICE";
+    public static final String BROADCAST_ACTION = "abhijit.travellogger.AudioRecord";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    Intent intent;
 
     @Override
+    public void onCreate(){
+        super.onCreate();
+        intent = new Intent(BROADCAST_ACTION);
+    }
+
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 //        throw new UnsupportedOperationException("Not yet implemented");
@@ -48,7 +61,30 @@ public class ServiceAudioRecord extends Service {
             e.printStackTrace();
         }
         showNotification();
+        handler.removeCallbacks(sendUpdatesToUI);
+        handler.postDelayed(sendUpdatesToUI, 1000);
         return START_STICKY;
+    }
+
+    private Runnable sendUpdatesToUI = new Runnable() {
+        @Override
+        public void run() {
+            DisplayLoggingInfo();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
+    private void DisplayLoggingInfo(){
+        intent.putExtra("time", new Date().toString());
+        Long timeElapsed = (SystemClock.elapsedRealtime() - startTime);
+        String counter =  String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(timeElapsed),
+                TimeUnit.MILLISECONDS.toMinutes(timeElapsed),
+                TimeUnit.MILLISECONDS.toSeconds(timeElapsed)
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeElapsed))
+        );
+        intent.putExtra("counter", counter );
+        sendBroadcast(intent);
     }
 
     @Override
@@ -56,9 +92,6 @@ public class ServiceAudioRecord extends Service {
         this.stopRecording();
         super.onDestroy();
         mBuilder.mNotification.flags  = Notification.FLAG_AUTO_CANCEL;
-//        mBuilder.mNotification.
-//        Toast.makeText(this, "Recording Stopped", Toast.LENGTH_SHORT).show();
-
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(ns);
         nMgr.cancel(1);
@@ -90,7 +123,8 @@ public class ServiceAudioRecord extends Service {
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
         String audioName = "AUDIO_" + timeStamp +"_";
 
-        File appFolderAudio = MainActivity.appFolderAudio;
+        File appFolderAudio = MainActivity.getAppFolderAudio();
+
         try {
             audioFile = File.createTempFile(audioName, ".aac", appFolderAudio);
         } catch (IOException e) {
@@ -99,22 +133,20 @@ public class ServiceAudioRecord extends Service {
         }
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         recorder.setOutputFile(audioFile.getAbsolutePath());
         recorder.prepare();
         recorder.start();
-//        chronometer.setBase(SystemClock.elapsedRealtime());
-//        chronometer.setTextColor(Color.RED);
-//        chronometer.start();
+        startTime = SystemClock.elapsedRealtime();
     }
 
-
     public void stopRecording() {
-//        chronometer.stop();
-//        chronometer.setTextColor(Color.GREEN);
         recorder.stop();
+        recorder.reset();
+        startTime = (long) 0;
         recorder.release();
+        recorder = null;
         try {
             saveAudio();
         } catch (IOException e) {
@@ -125,7 +157,8 @@ public class ServiceAudioRecord extends Service {
     protected void saveAudio() throws IOException {
         ContentValues values = new ContentValues(4);
         long current = System.currentTimeMillis();
-        values.put(MediaStore.Audio.Media.TITLE, "audio" + audioFile.getName());
+
+        values.put(MediaStore.Audio.Media.TITLE, "Travel Logger - audio" + audioFile.getName());
         values.put(MediaStore.Audio.Media.DATE_ADDED, (int) (current / 1000));
         values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/3gpp");
         values.put(MediaStore.Audio.Media.DATA, audioFile.getAbsolutePath());

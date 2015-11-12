@@ -6,41 +6,54 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="abhijit.audiorecorder.AudioRecord">
 
-    <Button
+    <ImageButton
         android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Recording"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/audio_record_button"
+        android:scaleType="fitXY"
+        android:enabled="true"
+        android:background="@color/white"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        />
 
-    <Button
+    <ImageButton
         android:id="@+id/stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop Recording"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/audio_stop_button"
+        android:scaleType="fitXY"
         android:enabled="false"
+        android:background="@color/white"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
-
-    <Chronometer
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/chronometer"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:textSize="48dp"
-        android:textStyle="bold"
-        android:gravity="center"
-    />
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Time"
-        android:id="@+id/textView"
-        android:layout_above="@+id/chronometer"
+        android:text="Elapsed Time"
+        android:id="@+id/title"
+        android:layout_marginTop="99dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/elapsedTime"
+        android:id="@+id/recordedTime"
+        android:layout_below="@+id/title"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:typeface="monospace"
+        android:padding="5sp"
+        android:elegantTextHeight="false" />
 
 </RelativeLayout>

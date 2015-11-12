@@ -2,6 +2,7 @@ package abhijit.travellogger;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int ACTIVITY_START_GALLERY_AUDIO = 13 ;
     private String audioFileLocation ="";
 
+    //Cache
+    private static LruCache<String, Bitmap> imageCache ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +106,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerView.Adapter viewAdapter = new ViewAdapter(mediaFiles, this);
         recyclerView.setAdapter(viewAdapter);
 
+        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+        final int cacheSize = maxMemorySize / 10;
+
+        imageCache = new LruCache<String, Bitmap>(cacheSize) {
+
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
+
     }
 
     public File[] getMediaFiles() {
@@ -112,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         while (iterator.hasNext()) {
             File f = iterator.next();
             String mimeType = getMimeTypeFromFile(f);
-            if (mimeType == null || !(mimeType.equals("image/jpeg") || mimeType.equals("video/mp4")) ) {
+            if (mimeType == null || !(mimeType.equals("image/jpeg") || mimeType.equals("video/mp4") || mimeType.equals("audio/aac")) ) {
                 iterator.remove();
             }
         }
@@ -136,6 +152,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public static Bitmap getBitmapFromMemoryCache(String key) {
+        return imageCache.get(key);
+    }
+
+    public static void setBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if(getBitmapFromMemoryCache(key) == null) {
+            imageCache.put(key, bitmap);
+        }
+    }
 
 
     private File getAppFolder(){
