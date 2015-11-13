@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/general_view"
     >
 
     <!--Layout for ImageView-->
@@ -74,17 +75,23 @@
         android:orientation="vertical"
         android:visibility="gone">
 
+        <TextView
+            android:id="@+id/audio_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Text for video."/>
         <Button
             android:id="@+id/audio_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Play"
+            android:layout_below="@+id/audio_text"
             />
         <SeekBar
             android:id="@+id/audio_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/audio_button"/>
+            android:layout_toEndOf="@+id/audio_button"/>
 
     </RelativeLayout>
 

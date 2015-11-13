@@ -20,7 +20,9 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -32,14 +34,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.net.PortUnreachableException;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import nl.changer.audiowife.AudioWife;
 
 /**
  * Created by abhijit on 10/25/15.
@@ -81,75 +79,137 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         return mediaList.toArray(new File[mediaList.size()]);
     }
 
-    public static class AsyncDrawable extends BitmapDrawable {
-        final WeakReference<ImageLoaderAsyncTask> taskReference;
+//    public static class AsyncDrawable extends BitmapDrawable {
+//        final WeakReference<ImageLoaderAsyncTask> taskReference;
+//
+//        public AsyncDrawable(Resources resources,
+//                             Bitmap bitmap,
+//                             ImageLoaderAsyncTask bitmapWorkerTask) {
+//            super(resources, bitmap);
+//            taskReference = new WeakReference(bitmapWorkerTask);
+//        }
+//
+//        public ImageLoaderAsyncTask getImageLoaderTask() {
+//            return taskReference.get();
+//        }
+//    }
 
-        public AsyncDrawable(Resources resources,
-                             Bitmap bitmap,
-                             ImageLoaderAsyncTask bitmapWorkerTask) {
-            super(resources, bitmap);
-            taskReference = new WeakReference(bitmapWorkerTask);
-        }
+//    public static ImageLoaderAsyncTask getImageLoaderTask(ImageView imageView) {
+//        Drawable drawable = imageView.getDrawable();
+//        if(drawable instanceof AsyncDrawable) {
+//            AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+//            return asyncDrawable.getImageLoaderTask();
+//        }
+//        return null;
+//    }
 
-        public ImageLoaderAsyncTask getImageLoaderTask() {
-            return taskReference.get();
-        }
-    }
-
-    public static ImageLoaderAsyncTask getImageLoaderTask(ImageView imageView) {
-        Drawable drawable = imageView.getDrawable();
-        if(drawable instanceof AsyncDrawable) {
-            AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-            return asyncDrawable.getImageLoaderTask();
-        }
-        return null;
-    }
-
-    public static boolean checkImageLoaderTask(File imageFile, ImageView imageView) {
-        ImageLoaderAsyncTask imageLoaderTask = getImageLoaderTask(imageView);
-        if(imageLoaderTask != null) {
-            final File workerFile = imageLoaderTask.getImageFile();
-            if(workerFile != null) {
-                if(workerFile != imageFile) {
-                    imageLoaderTask.cancel(true);
-                } else {
-                    // bitmap worker task file is the same as the imageview is expecting
-                    // so do nothing
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+//    public static boolean checkImageLoaderTask(File imageFile, ImageView imageView) {
+//        ImageLoaderAsyncTask imageLoaderTask = getImageLoaderTask(imageView);
+//        if(imageLoaderTask != null) {
+//            final File workerFile = imageLoaderTask.getImageFile();
+//            if(workerFile != null) {
+//                if(workerFile != imageFile) {
+//                    imageLoaderTask.cancel(true);
+//                } else {
+//                    // bitmap worker task file is the same as the imageview is expecting
+//                    // so do nothing
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
     //2. Views for mimetypes
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView iv;
-        private VideoView vv;
-        private Button av;
-        private TextView  tv;
+
+        private View imageLayout;
+        private View videoLayout;
+        private View audioLayout;
+        private View noteLayout;
+
+//        private ImageView imageLayout;
+//        private VideoView videoLayout;
+//        private Button audioLayout;
+//        private TextView  noteLayout;
+
+        private TextView imageText;
+        private ImageView imageView;
+
+        private TextView videoText;
+        private VideoView videoView;
+
+        private TextView audioText;
+        private Button audioButton;
+        private SeekBar audioSeekbar;
+
+
+        private TextView noteText;
 
         public ViewHolder(View view){
             super(view);
+//            imageLayout = (ImageView) view.findViewById(R.id.image);
+//            videoLayout = (VideoView) view.findViewById(R.id.videoLayout);
+//            audioLayout = (Button) view.findViewById(R.id.audioPlay);
+//            noteLayout = (TextView) view.findViewById(R.id.textView);
+            imageLayout = view.findViewById(R.id.image);
+            videoLayout = view.findViewById(R.id.video);
+            audioLayout = view.findViewById(R.id.audio);
+            noteLayout = view.findViewById(R.id.note);
 
-            iv = (ImageView) view.findViewById(R.id.imageView);
+            imageText = (TextView) view.findViewById(R.id.image_view_text);
+            imageView = (ImageView) view.findViewById(R.id.image_view);
 
-            vv = (VideoView) view.findViewById(R.id.videoView);
+            videoText = (TextView) view.findViewById(R.id.video_text);
+            videoView = (VideoView) view.findViewById(R.id.video_View);
 
-            av = (Button) view.findViewById(R.id.audioPlay);
+            audioText = (TextView) view.findViewById(R.id.audio_text);
+            audioButton = (Button) view.findViewById(R.id.audio_button);
+            audioSeekbar = (SeekBar) view.findViewById(R.id.audio_seekbar);
 
-            tv = (TextView) view.findViewById(R.id.textView);
+            noteText = (TextView) view.findViewById(R.id.note_text);
+
         }
 
-        public ImageView getImageView(){ return iv; }
+        public View getImageLayout(){ return imageLayout; }
 
-        public VideoView getVideoView(){
-            return vv;
+        public View getVideoLayout(){ return videoLayout; }
+
+        public View getAudioLayout(){ return audioLayout; }
+
+        public View getNoteLayout(){ return noteLayout; }
+
+        public TextView getImageText() {
+            return imageText;
         }
 
-        public Button getAudioView(){ return av; }
+        public ImageView getImageView() {
+            return imageView;
+        }
 
-        public TextView getTextView(){ return tv; }
+        public TextView getNoteText() {
+            return noteText;
+        }
+
+        public SeekBar getAudioSeekbar() {
+            return audioSeekbar;
+        }
+
+        public Button getAudioButton() {
+            return audioButton;
+        }
+
+        public TextView getAudioText() {
+            return audioText;
+        }
+
+        public VideoView getVideoView() {
+            return videoView;
+        }
+
+        public TextView getVideoText() {
+            return videoText;
+        }
     }
 
     //3. bind viewholder to view
@@ -175,31 +235,66 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
     public void bindAudio(final ViewHolder holder, final File file){
 
+        TextView audioText = holder.getAudioText();
+        audioText.setText("Text for Audio");
+
         Uri audioFileUri;
         audioFileUri = Uri.fromFile(file);
         player = MediaPlayer.create(context.getApplicationContext(), audioFileUri);
-//        player.start();
-//        player.pause();
 
-        holder.getAudioView().setOnClickListener(new View.OnClickListener() {
+        final Button playButton =  holder.getAudioButton();
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(player.isPlaying()){
+                if (player.isPlaying()) {
                     player.pause();
-                    holder.getAudioView().setText("Play");
+                    playButton.setText("Play");
                 } else {
                     player.start();
-                    holder.getAudioView().setText("Pause");
+                    playButton.setText("Pause");
                 }
             }
         });
+
+        SeekBar seekBar = holder.getAudioSeekbar();
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        holder.getAudioLayout().setVisibility(View.VISIBLE);
     }
 
     public void bindImage(ViewHolder holder, final File file){
 
-        holder.getImageView().setClickable(true);
+//        holder.getImageLayout().setVisibility(View.VISIBLE);
+        ImageView imageView = holder.getImageView();
+        TextView  textView  = holder.getImageText();
 
-        holder.getImageView().setOnClickListener(new View.OnClickListener() {
+//        imageView.setImageBitmap(null);
+//        Picasso.with(imageView.getContext()).cancelRequest(imageView);
+        //Place image in the imageLayout
+        Picasso.with(imageView.getContext())
+                .load(file)
+                .resize(768, 432)
+                .centerCrop()
+                .into(imageView);
+
+        //Set ImageView clicks
+        imageView.setClickable(true);
+        imageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
@@ -208,50 +303,50 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             }
         });
 
-        Picasso.with(holder.getImageView().getContext())
-                .load(file)
-                .resize(768, 432)
-                .centerCrop()
-                .into(holder.getImageView());
-
-//        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageView());
+        //Set text for the ImageView
+        textView.setText("This is text for ImageView");
+//        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageLayout());
 //        imageLoader.execute(file);
 //        Bitmap bitmap = MainActivity.getBitmapFromMemoryCache(file.getName());
 //        if(bitmap != null) {
-//            holder.getImageView().setImageBitmap(bitmap);
+//            holder.getImageLayout().setImageBitmap(bitmap);
 //        }
-//        else if(checkImageLoaderTask(file, holder.getImageView())) {
-//            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageView());
+//        else if(checkImageLoaderTask(file, holder.getImageLayout())) {
+//            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageLayout());
 //            AsyncDrawable asyncDrawable = new AsyncDrawable(
-//                    holder.getImageView().getResources(),
+//                    holder.getImageLayout().getResources(),
 //                    placeholderBitmap,
 //                    imageLoaderTask);
-//            holder.getImageView().setImageDrawable(asyncDrawable);
+//            holder.getImageLayout().setImageDrawable(asyncDrawable);
 //            imageLoaderTask.execute(file);
 //        }
 
+        holder.getImageLayout().setVisibility(View.VISIBLE);
     }
 
     public void bindVideo(ViewHolder holder, File file){
-        final VideoView videoView = holder.getVideoView();
+
+        final VideoView videoView = (VideoView) holder.getVideoLayout().findViewById(R.id.video_View);
+        final TextView  textView  = (TextView) holder.getVideoLayout().findViewById(R.id.video_text);
+
         videoView.setVideoPath(file.getAbsolutePath());
         videoView.requestFocus();
         videoView.seekTo(5000);
-//        final MediaController mediaController = new MediaController(holder.getVideoView().getContext());
-//        mediaController.setAnchorView(holder.getVideoView());
-//        mediaController.setMediaPlayer(holder.getVideoView());
+//        final MediaController mediaController = new MediaController(holder.getVideoLayout().getContext());
+//        mediaController.setAnchorView(holder.getVideoLayout());
+//        mediaController.setMediaPlayer(holder.getVideoLayout());
 //        mediaController.hide();
-//        videoView.setMediaController(mediaController);
-//        videoView.setClickable(true);
+//        videoLayout.setMediaController(mediaController);
+//        videoLayout.setClickable(true);
         /*
-        videoView.setOnClickListener(new View.OnClickListener() {
+        videoLayout.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (videoView.isPlaying()) {
-                    videoView.pause();
+                if (videoLayout.isPlaying()) {
+                    videoLayout.pause();
                     mediaController.show(10);
                 }
                 else {
-                    videoView.start();
+                    videoLayout.start();
                     mediaController.hide();
                 }
             }
@@ -264,18 +359,25 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                     if (videoView.isPlaying()) {
                         videoView.pause();
 //                        mediaController.show(20);
+                        textView.setText("Paused.");
                     }
                     else {
                         videoView.start();
 //                        mediaController.hide();
+                        textView.setText("Playing");
                     }
                 }
                 return false;
             }
         });
+
+        holder.getVideoLayout().setVisibility(View.VISIBLE);
     }
 
     public void bindNote(ViewHolder holder, File file){
+
+        TextView textView = (TextView) holder.getNoteLayout().findViewById(R.id.note_text);
+
         try {
             FileInputStream fIn = new FileInputStream(file);
             BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
@@ -284,11 +386,13 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             while ((aDataRow = myReader.readLine()) != null) {
                 aBuffer += aDataRow + "\n";
             }
-            holder.getTextView().setText(aBuffer);
+            textView.setText(aBuffer);
             myReader.close();
         } catch (Exception e) {
             Toast.makeText(this.context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
+        holder.getNoteLayout().setVisibility(View.VISIBLE);
     }
 
     public String getMimeTypeFromFile(File file){
@@ -298,36 +402,63 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         return mimeType;
     }
 
-    // 4 assign view to viewholder according to mimetype
+    //4 assign view to viewholder according to mimetype
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view;
+
+        //this will contain all the views in gone mode
+        LinearLayout containerLayout;
+        //this will contain the individual views in gone mode
+        View itemView;
+        //this will contain the comib=ned view from above two
+        View finalView;
+
         ViewHolder viewHolder;
-        switch (viewType) {
-            case 1:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.images, parent, false);
-                viewHolder = new ViewHolder(view);
-                return viewHolder;
 
-            case 2:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.videos, parent, false);
-                viewHolder = new ViewHolder(view);
-                return viewHolder;
+//        LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-            case 3:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.audios, parent, false);
-                viewHolder = new ViewHolder(view);
-                return viewHolder;
+        finalView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layouts, parent, false);
+//        containerLayout = (LinearLayout) parent.findViewById(R.id.general_view);
 
-            case 4:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notes, parent, false);
-                viewHolder = new ViewHolder(view);
-                return viewHolder;
+//        switch (viewType) {
+//            case 1:
+////                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layouts, parent, false);
+//                itemView = parent.findViewById(R.id.image);
+//                containerLayout.addView(itemView);
+//                break;
+//
+//            case 2:
+////                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.videos, parent, false);
+////                viewHolder = new ViewHolder(view);
+////                return viewHolder;
+//                itemView = parent.findViewById(R.id.video);
+//                containerLayout.addView(itemView);
+//                break;
+//
+//            case 3:
+////                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.audios, parent, false);
+////                viewHolder = new ViewHolder(view);
+////                return viewHolder;
+//                itemView = parent.findViewById(R.id.audio);
+//                containerLayout.addView(itemView);
+//                break;
+//
+//            case 4:
+////                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notes, parent, false);
+////                viewHolder = new ViewHolder(view);
+////                return viewHolder;
+//                itemView = parent.findViewById(R.id.note);
+//                containerLayout.addView(itemView);
+//                break;
+//
+//            default:
+//                return null;
+//        }
 
-            default:
-                return null;
-        }
 
+//        finalView.setVisibility(View.VISIBLE);
+        viewHolder = new ViewHolder(finalView);
+        return viewHolder;
     }
 
     @Override
@@ -335,7 +466,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         return mediaFiles.length;
     }
 
-    //5 return mimetypes from the list of files
+    //3 return mimetypes from the list of files
     @Override
     public int getItemViewType(int position) {
         File file = mediaFiles[position];

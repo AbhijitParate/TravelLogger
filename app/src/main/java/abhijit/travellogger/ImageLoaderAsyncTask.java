@@ -33,7 +33,8 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
         imageFile = params[0];
 //        return decodeBitmapFromFile(params[0]);
         Bitmap bitmap = decodeBitmapFromFile(imageFile);
-        MainActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
+        //Uncomment this to use async task
+//        MainActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
         return bitmap;
     }
 
@@ -52,10 +53,11 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
         }
         if(bitmap != null && imageViewWeakReference != null) {
             ImageView imageView = imageViewWeakReference.get();
-            ImageLoaderAsyncTask bitmapWorkerTask = ViewAdapter.getImageLoaderTask(imageView);
-            if(this == bitmapWorkerTask && imageView != null){
-                imageView.setImageBitmap(bitmap);
-            }
+            //Uncomment this to use async task
+//            ImageLoaderAsyncTask bitmapWorkerTask = ViewAdapter.getImageLoaderTask(imageView);
+//            if(this == bitmapWorkerTask && imageView != null){
+//                imageView.setImageBitmap(bitmap);
+//            }
         }
     }
 

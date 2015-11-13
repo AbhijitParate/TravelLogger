@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.checkDir();
+//        InitiateApplication.checkPermissions(this);
         this.buildFab();
 
         resultList = new ArrayList<>();
@@ -107,16 +108,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerView.Adapter viewAdapter = new ViewAdapter(mediaFiles, this);
         recyclerView.setAdapter(viewAdapter);
 
-        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
-        final int cacheSize = maxMemorySize / 10;
+//        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+//        final int cacheSize = maxMemorySize / 10;
 
-        imageCache = new LruCache<String, Bitmap>(cacheSize) {
-
-            @Override
-            protected int sizeOf(String key, Bitmap value) {
-                return value.getByteCount() / 1024;
-            }
-        };
+//        imageCache = new LruCache<String, Bitmap>(cacheSize) {
+//
+//            @Override
+//            protected int sizeOf(String key, Bitmap value) {
+//                return value.getByteCount() / 1024;
+//            }
+//        };
 
     }
 
@@ -159,15 +160,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public static Bitmap getBitmapFromMemoryCache(String key) {
-        return imageCache.get(key);
-    }
+//    public static Bitmap getBitmapFromMemoryCache(String key) {
+//        return imageCache.get(key);
+//    }
 
-    public static void setBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if(getBitmapFromMemoryCache(key) == null) {
-            imageCache.put(key, bitmap);
-        }
-    }
+//    public static void setBitmapToMemoryCache(String key, Bitmap bitmap) {
+//        if(getBitmapFromMemoryCache(key) == null) {
+//            imageCache.put(key, bitmap);
+//        }
+//    }
 
 
     private File getAppFolder(){
