@@ -33,9 +33,7 @@ public class ServiceAudioRecord extends Service {
     File audioFile = null;
     NotificationCompat.Builder mBuilder;
     private static Long startTime;
-//    private static Long stopTime;
 
-//    public static final String TAG = "BROADCAST_SERVICE";
     public static final String BROADCAST_ACTION = "abhijit.travellogger.AudioRecord";
     private final Handler handler = new Handler(Looper.getMainLooper());
     Intent intent;

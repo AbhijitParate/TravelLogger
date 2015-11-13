@@ -27,7 +27,10 @@ import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.PortUnreachableException;
 import java.security.PublicKey;
@@ -48,6 +51,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     private static final int MIME_TYPE_IMAGE    = 1;
     private static final int MIME_TYPE_VIDEO    = 2;
     private static final int MIME_TYPE_AUDIO    = 3;
+    private static final int MIME_TYPE_NOTE     = 4;
 
     private File[] mediaFiles;
     private File[] imageFiles;
@@ -123,7 +127,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         private ImageView iv;
         private VideoView vv;
         private Button av;
-//        private TextView  tv;
+        private TextView  tv;
 
         public ViewHolder(View view){
             super(view);
@@ -133,6 +137,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             vv = (VideoView) view.findViewById(R.id.videoView);
 
             av = (Button) view.findViewById(R.id.audioPlay);
+
+            tv = (TextView) view.findViewById(R.id.textView);
         }
 
         public ImageView getImageView(){ return iv; }
@@ -142,6 +148,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         }
 
         public Button getAudioView(){ return av; }
+
+        public TextView getTextView(){ return tv; }
     }
 
     //3. bind viewholder to view
@@ -158,6 +166,9 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 break;
             case "audio/aac":
                 bindAudio(holder, mediaFile);
+                break;
+            case "text/plain":
+                bindNote(holder, mediaFile);
                 break;
         }
     }
@@ -197,28 +208,27 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             }
         });
 
-//        Picasso.with(holder.getImageView().getContext())
-//                .load(file)
-//                .resize(768, 432)
-//                .centerCrop()
-//                .into(holder.getImageView());
-//
+        Picasso.with(holder.getImageView().getContext())
+                .load(file)
+                .resize(768, 432)
+                .centerCrop()
+                .into(holder.getImageView());
 
-        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageView());
-        imageLoader.execute(file);
-        Bitmap bitmap = MainActivity.getBitmapFromMemoryCache(file.getName());
-        if(bitmap != null) {
-            holder.getImageView().setImageBitmap(bitmap);
-        }
-        else if(checkImageLoaderTask(file, holder.getImageView())) {
-            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageView());
-            AsyncDrawable asyncDrawable = new AsyncDrawable(
-                    holder.getImageView().getResources(),
-                    placeholderBitmap,
-                    imageLoaderTask);
-            holder.getImageView().setImageDrawable(asyncDrawable);
-            imageLoaderTask.execute(file);
-        }
+//        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageView());
+//        imageLoader.execute(file);
+//        Bitmap bitmap = MainActivity.getBitmapFromMemoryCache(file.getName());
+//        if(bitmap != null) {
+//            holder.getImageView().setImageBitmap(bitmap);
+//        }
+//        else if(checkImageLoaderTask(file, holder.getImageView())) {
+//            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageView());
+//            AsyncDrawable asyncDrawable = new AsyncDrawable(
+//                    holder.getImageView().getResources(),
+//                    placeholderBitmap,
+//                    imageLoaderTask);
+//            holder.getImageView().setImageDrawable(asyncDrawable);
+//            imageLoaderTask.execute(file);
+//        }
 
     }
 
@@ -265,6 +275,22 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         });
     }
 
+    public void bindNote(ViewHolder holder, File file){
+        try {
+            FileInputStream fIn = new FileInputStream(file);
+            BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
+            String aDataRow;
+            String aBuffer = "";
+            while ((aDataRow = myReader.readLine()) != null) {
+                aBuffer += aDataRow + "\n";
+            }
+            holder.getTextView().setText(aBuffer);
+            myReader.close();
+        } catch (Exception e) {
+            Toast.makeText(this.context, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public String getMimeTypeFromFile(File file){
         Uri uri = Uri.fromFile(file);
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
@@ -293,6 +319,11 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 viewHolder = new ViewHolder(view);
                 return viewHolder;
 
+            case 4:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notes, parent, false);
+                viewHolder = new ViewHolder(view);
+                return viewHolder;
+
             default:
                 return null;
         }
@@ -309,12 +340,14 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     public int getItemViewType(int position) {
         File file = mediaFiles[position];
         String mimeType = getMimeTypeFromFile(file);
-        if (mimeType.equals("image/jpeg")) {
+        if        (mimeType.equals("image/jpeg")) {
             return MIME_TYPE_IMAGE;
         } else if (mimeType.equals("video/mp4")){
             return MIME_TYPE_VIDEO;
         } else if (mimeType.equals("audio/aac")){
             return MIME_TYPE_AUDIO;
+        } else if (mimeType.equals("text/plain")){
+            return MIME_TYPE_NOTE;
         }
         return MIME_TYPE_INVALID;
     }

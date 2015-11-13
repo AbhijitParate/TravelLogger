@@ -45,13 +45,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final File appFolderCamera = new File(appFolder + "/TLCamera");
     public static final File appFolderVideo = new File(appFolder + "/TLVideo");
     public static final File appFolderAudio = new File(appFolder + "/TLAudio");
+    public static final File appFolderNotes = new File(appFolder + "/TLNotes");
     public static final File appFolderTemp = new File(appFolder + "/Temp");
 
     private File[] mediaFiles;
     private  static List<File> resultList;
 
     //FAB Button Sizes
-    private static final int FAB_BUTTON_SIZE = 500;
+    private static final int FAB_BUTTON_SIZE = 400;
     private static final int FAB_SUB_BUTTON_SIZE = 230;
     private static final int FAB_SUB_BUTTON_DISTANCE = 400;
 
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG_AUDIO_RECORDER = "Audio Recorder";
     private static final String TAG_NOTE = "Notes";
 //ImageView
-    private ImageView ivCapturedImage;
+//    private ImageView ivCapturedImage;
     private RecyclerView recyclerView;
 
 //for Camera Intent
@@ -128,7 +129,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         while (iterator.hasNext()) {
             File f = iterator.next();
             String mimeType = getMimeTypeFromFile(f);
-            if (mimeType == null || !(mimeType.equals("image/jpeg") || mimeType.equals("video/mp4") || mimeType.equals("audio/aac")) ) {
+            if ( mimeType == null ||
+                 !(mimeType.equals("image/jpeg") ||
+                   mimeType.equals("video/mp4")  ||
+                   mimeType.equals("audio/aac")  ||
+                   mimeType.equals("text/plain"))
+                )
+            {
                 iterator.remove();
             }
         }
@@ -210,6 +217,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 result = "AUD";
             }
         }
+
+        //Check for Notes Dir
+        if (!appFolderNotes.exists() && !appFolderNotes.isDirectory()) {
+            appDir = appFolderNotes.mkdir();
+            if(appDir == false){
+                result = "TXT";
+            }
+        }
+
         if (!appFolderTemp.exists() && !appFolderTemp.isDirectory()) {
             appDir = appFolderTemp.mkdir();
             if(appDir == false){
@@ -229,6 +245,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case "AUD":
                 Toast.makeText(this, "Failed to create Audio Directory.", Toast.LENGTH_SHORT).show();
+                break;
+            case "TXT":
+                Toast.makeText(this, "Failed to create Notes Directory.", Toast.LENGTH_SHORT).show();
                 break;
             case "TMP":
                 Toast.makeText(this, "Failed to create Audio Directory.", Toast.LENGTH_SHORT).show();
@@ -309,17 +328,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getTag().toString()) {
             case (TAG_CAMERA):
-                takePhoto(ivCapturedImage);
+                takePhoto();
                 break;
             case (TAG_CAMCORDER):
-                takeVideo(ivCapturedImage);
+                takeVideo();
                 break;
             case (TAG_AUDIO_RECORDER):
                 startRecordActivity();
                 // Snackbar.make(v, v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
                 break;
             case (TAG_NOTE):
-                Snackbar.make(v, v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
+                takeNotes();
+//                Snackbar.make(v, v.getTag() + " pressed.", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }
@@ -437,7 +457,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void takeVideo(View view){
+    public void takeNotes(){
+        //on click action
+        Intent intent = new Intent(getApplicationContext(), NotesActivity.class);
+        startActivity(intent);
+    }
+
+    public void takeVideo(){
         Intent vidCameraIntent = new Intent();
         vidCameraIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
 
@@ -454,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(vidCameraIntent, ACTIVITY_START_VIDEO_CAMERA_APP);
     }
 
-    public void takePhoto(View view){
+    public void takePhoto(){
         Intent callCameraApp = new Intent();
         callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         File imageFile = null;
@@ -512,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     File saveImage() throws IOException {
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
         String imageName = "IMAGE_" + timeStamp;
-        File image = File.createTempFile(imageName,".jpg", appFolderCamera);
+        File image = File.createTempFile(imageName, ".jpg", appFolderCamera);
         imageFileLocation = image.getAbsolutePath();
         return image;
     }
@@ -589,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setRadius(FAB_SUB_BUTTON_DISTANCE)
                 .build();
     }
-/*
+
     @Override
     public void onResume(){
         super.onResume();
@@ -603,7 +629,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerView.Adapter newImageAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
         recyclerView.swapAdapter(newImageAdapter, false);
     }
-*/
+
     public static File getAppFolderCamera() {
         return appFolderCamera;
     }
@@ -615,6 +641,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static File getAppFolderAudio() {
         return appFolderAudio;
     }
+
+    public static File getAppFolderNotes() { return appFolderNotes; }
 
 
 }
