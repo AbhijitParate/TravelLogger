@@ -15,8 +15,8 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
 
     WeakReference<ImageView> imageViewWeakReference;
 
-    final static int IMAGE_HEIGHT = 432;
-    final static int IMAGE_WIDTH = 768;
+    final static int IMAGE_HEIGHT = 603;
+    final static int IMAGE_WIDTH = 1072;
 
     private File imageFile;
 
@@ -34,30 +34,22 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
 //        return decodeBitmapFromFile(params[0]);
         Bitmap bitmap = decodeBitmapFromFile(imageFile);
         //Uncomment this to use async task
-//        MainActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
+        MainActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
         return bitmap;
     }
 
     @Override
     protected void onPostExecute(Bitmap bitmap){
-        /*
-        if(bitmap != null && imageViewWeakReference != null ){
-            ImageView imageView = imageViewWeakReference.get();
-            if (imageView != null){
-                imageView.setImageBitmap(bitmap);
-            }
-        }
-        */
         if(isCancelled()) {
             bitmap = null;
         }
         if(bitmap != null && imageViewWeakReference != null) {
             ImageView imageView = imageViewWeakReference.get();
             //Uncomment this to use async task
-//            ImageLoaderAsyncTask bitmapWorkerTask = ViewAdapter.getImageLoaderTask(imageView);
-//            if(this == bitmapWorkerTask && imageView != null){
-//                imageView.setImageBitmap(bitmap);
-//            }
+            ImageLoaderAsyncTask bitmapWorkerTask = ViewAdapter.getImageLoaderTask(imageView);
+            if(this == bitmapWorkerTask && imageView != null){
+                imageView.setImageBitmap(bitmap);
+            }
         }
     }
 

@@ -39,7 +39,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
         try {
 //            File f = File.createTempFile(Environment.getExternalStorageDirectory().toString() + "/test", ".txt");
-            File f =  new File(MainActivity.getAppFolderNotes().toString()+"/" +noteName + ".txt");
+            File f =  new File(InitiateApplication.getAppFolderNotes().toString()+"/" +noteName + ".txt");
 //            File f = File.createTempFile(noteName, ".txt", MainActivity.getAppFolderNotes());
             if(!f.exists()){
                 f.createNewFile();

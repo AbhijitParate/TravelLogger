@@ -6,6 +6,10 @@ package abhijit.travellogger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -28,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -50,7 +54,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     private final Context context;
 
     //For AsyncTask
-//    private Bitmap placeholderBitmap;
+    private Bitmap placeholderBitmap;
 
     //Receive data from mainActivity
     public ViewAdapter(File[] folderFiles, Context mainContext){
@@ -66,11 +70,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         private View videoLayout;
         private View audioLayout;
         private View noteLayout;
-
-//        private ImageView imageLayout;
-//        private VideoView videoLayout;
-//        private Button audioLayout;
-//        private TextView  noteLayout;
 
         private TextView imageTitle;
         private ImageView imageView;
@@ -88,10 +87,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
         public ViewHolder(View view){
             super(view);
-//            imageLayout = (ImageView) view.findViewById(R.id.image);
-//            videoLayout = (VideoView) view.findViewById(R.id.videoLayout);
-//            audioLayout = (Button) view.findViewById(R.id.audioPlay);
-//            noteLayout = (TextView) view.findViewById(R.id.textView);
             imageLayout = view.findViewById(R.id.image);
             videoLayout = view.findViewById(R.id.video);
             audioLayout = view.findViewById(R.id.audio);
@@ -162,16 +157,18 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     public int getItemViewType(int position) {
         File file = mediaFiles[position];
         String mimeType = getMimeTypeFromFile(file);
-        if        (mimeType.equals("image/jpeg")) {
-            return MIME_TYPE_IMAGE;
-        } else if (mimeType.equals("video/mp4")){
-            return MIME_TYPE_VIDEO;
-        } else if (mimeType.equals("audio/aac")){
-            return MIME_TYPE_AUDIO;
-        } else if (mimeType.equals("text/plain")){
-            return MIME_TYPE_NOTE;
+        switch (mimeType) {
+            case "image/jpeg":
+                return MIME_TYPE_IMAGE;
+            case "video/mp4":
+                return MIME_TYPE_VIDEO;
+            case "audio/aac":
+                return MIME_TYPE_AUDIO;
+            case "text/plain":
+                return MIME_TYPE_NOTE;
+            default:
+                return MIME_TYPE_INVALID;
         }
-        return MIME_TYPE_INVALID;
     }
 
     @Override
@@ -256,8 +253,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
             }
         });
-
-//        holder.getAudioLayout().setVisibility(View.VISIBLE);
     }
 
     public void bindImage(ViewHolder holder, final File file){
@@ -266,11 +261,11 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         TextView  imageTitle  = holder.getImageTitle();
 
         //Place image in the imageLayout
-        Picasso.with(imageView.getContext())
-                .load(file)
-                .resize(1072,603)
-                .centerCrop()
-                .into(imageView);
+//        Picasso.with(imageView.getContext())
+//                .load(file)
+//                .resize(1072,603)
+//                .centerCrop()
+//                .into(imageView);
 
         //Set ImageView clicks
         imageView.setClickable(true);
@@ -287,23 +282,21 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         //Set text for the ImageView
         imageTitle.setText("Title for Image.");
 
-//        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageLayout());
-//        imageLoader.execute(file);
-//        Bitmap bitmap = MainActivity.getBitmapFromMemoryCache(file.getName());
-//        if(bitmap != null) {
-//            holder.getImageLayout().setImageBitmap(bitmap);
-//        }
-//        else if(checkImageLoaderTask(file, holder.getImageLayout())) {
-//            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageLayout());
-//            AsyncDrawable asyncDrawable = new AsyncDrawable(
-//                    holder.getImageLayout().getResources(),
-//                    placeholderBitmap,
-//                    imageLoaderTask);
-//            holder.getImageLayout().setImageDrawable(asyncDrawable);
-//            imageLoaderTask.execute(file);
-//        }
-
-//        holder.getImageLayout().setVisibility(View.VISIBLE);
+        ImageLoaderAsyncTask imageLoader = new ImageLoaderAsyncTask(holder.getImageView());
+        imageLoader.execute(file);
+        Bitmap bitmap = MainActivity.getBitmapFromMemoryCache(file.getName());
+        if(bitmap != null) {
+            holder.getImageView().setImageBitmap(bitmap);
+        }
+        else if(checkImageLoaderTask(file, holder.getImageView())) {
+            ImageLoaderAsyncTask imageLoaderTask = new ImageLoaderAsyncTask(holder.getImageView());
+            AsyncDrawable asyncDrawable = new AsyncDrawable(
+                    holder.getImageLayout().getResources(),
+                    placeholderBitmap,
+                    imageLoaderTask);
+            holder.getImageView().setImageDrawable(asyncDrawable);
+            imageLoaderTask.execute(file);
+        }
     }
 
     public void bindVideo(ViewHolder holder, File file){
@@ -385,45 +378,45 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     }
 
     //Async tasks
-//    public static class AsyncDrawable extends BitmapDrawable {
-//        final WeakReference<ImageLoaderAsyncTask> taskReference;
-//
-//        public AsyncDrawable(Resources resources,
-//                             Bitmap bitmap,
-//                             ImageLoaderAsyncTask bitmapWorkerTask) {
-//            super(resources, bitmap);
-//            taskReference = new WeakReference(bitmapWorkerTask);
-//        }
-//
-//        public ImageLoaderAsyncTask getImageLoaderTask() {
-//            return taskReference.get();
-//        }
-//    }
+    public static class AsyncDrawable extends BitmapDrawable {
+        final WeakReference<ImageLoaderAsyncTask> taskReference;
 
-//    public static ImageLoaderAsyncTask getImageLoaderTask(ImageView imageView) {
-//        Drawable drawable = imageView.getDrawable();
-//        if(drawable instanceof AsyncDrawable) {
-//            AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-//            return asyncDrawable.getImageLoaderTask();
-//        }
-//        return null;
-//    }
+        public AsyncDrawable(Resources resources,
+                             Bitmap bitmap,
+                             ImageLoaderAsyncTask bitmapWorkerTask) {
+            super(resources, bitmap);
+            taskReference = new WeakReference(bitmapWorkerTask);
+        }
 
-//    public static boolean checkImageLoaderTask(File imageFile, ImageView imageView) {
-//        ImageLoaderAsyncTask imageLoaderTask = getImageLoaderTask(imageView);
-//        if(imageLoaderTask != null) {
-//            final File workerFile = imageLoaderTask.getImageFile();
-//            if(workerFile != null) {
-//                if(workerFile != imageFile) {
-//                    imageLoaderTask.cancel(true);
-//                } else {
-//                    // bitmap worker task file is the same as the imageview is expecting
-//                    // so do nothing
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
+        public ImageLoaderAsyncTask getImageLoaderTask() {
+            return taskReference.get();
+        }
+    }
+
+    public static ImageLoaderAsyncTask getImageLoaderTask(ImageView imageView) {
+        Drawable drawable = imageView.getDrawable();
+        if(drawable instanceof AsyncDrawable) {
+            AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+            return asyncDrawable.getImageLoaderTask();
+        }
+        return null;
+    }
+
+    public static boolean checkImageLoaderTask(File imageFile, ImageView imageView) {
+        ImageLoaderAsyncTask imageLoaderTask = getImageLoaderTask(imageView);
+        if(imageLoaderTask != null) {
+            final File workerFile = imageLoaderTask.getImageFile();
+            if(workerFile != null) {
+                if(workerFile != imageFile) {
+                    imageLoaderTask.cancel(true);
+                } else {
+                    // bitmap worker task file is the same as the imageview is expecting
+                    // so do nothing
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }

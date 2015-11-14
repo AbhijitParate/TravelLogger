@@ -1,12 +1,9 @@
 package abhijit.travellogger;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +13,9 @@ import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
@@ -28,26 +23,11 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
 
-    //App Folder Setup
-    public static final File appFolder = new File(Environment.getExternalStorageDirectory() + "/TravelLogger");
-    public static final File appFolderCamera = new File(appFolder + "/TLCamera");
-    public static final File appFolderVideo = new File(appFolder + "/TLVideo");
-    public static final File appFolderAudio = new File(appFolder + "/TLAudio");
-    public static final File appFolderNotes = new File(appFolder + "/TLNotes");
-    public static final File appFolderTemp = new File(appFolder + "/Temp");
 
     private File[] mediaFiles;
-    private  static List<File> resultList;
 
     //FAB Button Sizes
     private static final int FAB_BUTTON_SIZE = 400;
@@ -56,50 +36,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static FloatingActionMenu actionMenu;
 
-//tags to select the appropriate activity
+    //tags to select the appropriate activity
     private static final String TAG_FAB = "Add new Photo, Video, Audio or Note.";
     private static final String TAG_CAMERA = "Still Camera";
     private static final String TAG_CAMCORDER = "Video Camera";
     private static final String TAG_AUDIO_RECORDER = "Audio Recorder";
     private static final String TAG_NOTE = "Notes";
-//ImageView
-//    private ImageView ivCapturedImage;
+
+    //RecyclerView
     private RecyclerView recyclerView;
 
-//for Camera Intent
+    //for Camera Intent
     private static final int ACTIVITY_START_CAMERA_APP = 1;
     private static final int ACTIVITY_START_GALLERY_PHOTO = 11 ;
     private String imageFileLocation ="";
 
-//For Video Camera Intent
+    //For Video Camera Intent
     private static final int ACTIVITY_START_VIDEO_CAMERA_APP = 2;
     private static final int ACTIVITY_START_GALLERY_VIDEO = 12 ;
     private String videoFileLocation ="";
 
-//For Audio Recorder Intent
+    //For Audio Recorder Intent
     private static final int ACTIVITY_START_AUDIO_REC_APP = 3;
     private static final int ACTIVITY_START_GALLERY_AUDIO = 13 ;
-    private String audioFileLocation ="";
 
     //Cache
     private static LruCache<String, Bitmap> imageCache ;
+
+    FileGenerator fileGenerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.checkDir();
-//        InitiateApplication.checkPermissions(this);
+
+        InitiateApplication.checkDirectoryStructure(this);
+        fileGenerator = new FileGenerator();
+        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+
         this.buildFab();
-
-        resultList = new ArrayList<>();
-
-        listFiles(getAppFolder());
-        removeUnwanted();
-
-        mediaFiles = null;
-        mediaFiles = getMediaFiles();
-        mediaFiles = sortFiles(mediaFiles);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
@@ -107,152 +82,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerView.Adapter viewAdapter = new ViewAdapter(mediaFiles, this);
         recyclerView.setAdapter(viewAdapter);
 
-//        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
-//        final int cacheSize = maxMemorySize / 10;
+        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+        final int cacheSize = maxMemorySize / 10;
 
-//        imageCache = new LruCache<String, Bitmap>(cacheSize) {
-//
-//            @Override
-//            protected int sizeOf(String key, Bitmap value) {
-//                return value.getByteCount() / 1024;
-//            }
-//        };
+        imageCache = new LruCache<String, Bitmap>(cacheSize) {
 
-    }
-
-    public File[] getMediaFiles() {
-        return resultList.toArray(new File[resultList.size()]);
-    }
-
-    public void removeUnwanted(){
-        Iterator<File> iterator = resultList.iterator();
-        while (iterator.hasNext()) {
-            File f = iterator.next();
-            String mimeType = getMimeTypeFromFile(f);
-            if ( mimeType == null ||
-                 !(mimeType.equals("image/jpeg") ||
-                   mimeType.equals("video/mp4")  ||
-                   mimeType.equals("audio/aac")  ||
-                   mimeType.equals("text/plain"))
-                )
-            {
-                iterator.remove();
-            }
-        }
-    }
-
-    public String getMimeTypeFromFile(File file){
-        Uri uri = Uri.fromFile(file);
-        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
-        String mimeType =  MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
-        return mimeType;
-    }
-
-    public void listFiles(File directory) {
-        File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile() && !file.isDirectory()) {
-                resultList.add(file);
-            } else if (file.isDirectory()) {
-                listFiles(file);
-            }
-        }
-    }
-
-//    public static Bitmap getBitmapFromMemoryCache(String key) {
-//        return imageCache.get(key);
-//    }
-
-//    public static void setBitmapToMemoryCache(String key, Bitmap bitmap) {
-//        if(getBitmapFromMemoryCache(key) == null) {
-//            imageCache.put(key, bitmap);
-//        }
-//    }
-
-    private File getAppFolder(){
-        return appFolder;
-    }
-
-    private File[] sortFiles(File[] fileImagesDir){
-        File[] files = fileImagesDir;
-        Arrays.sort(files, new Comparator<File>() {
             @Override
-            public int compare(File lhs, File rhs) {
-                return Long.valueOf(rhs.lastModified()).compareTo(lhs.lastModified());
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
             }
-        });
-        return files;
+        };
+
     }
 
-    public void checkDir(){
-//        File folder = appFolder;
-        boolean appDir = true;
-        String result ="";
-        //Check for base dir
-        if (!appFolder.exists() && !appFolder.isDirectory()) {
-            appDir = appFolder.mkdir();
-            if(appDir == false){
-                result = "APP";
-            }
-        }
-        //Check for Camera Dir
-        if (!appFolderCamera.exists() && !appFolderCamera.isDirectory()) {
-            appDir = appFolderCamera.mkdir();
-            if(appDir == false){
-                result = "CAM";
-            }
-        }
-        //Check for Video Dir
-        if (!appFolderVideo.exists() && !appFolderVideo.isDirectory()) {
-            appDir = appFolderVideo.mkdir();
-            if(appDir == false){
-                result = "VID";
-            }
-        }
-        //Check for Audio Dir
-        if (!appFolderAudio.exists() && !appFolderAudio.isDirectory()) {
-            appDir = appFolderAudio.mkdir();
-            if(appDir == false){
-                result = "AUD";
-            }
-        }
+    public static Bitmap getBitmapFromMemoryCache(String key) {
+        return imageCache.get(key);
+    }
 
-        //Check for Notes Dir
-        if (!appFolderNotes.exists() && !appFolderNotes.isDirectory()) {
-            appDir = appFolderNotes.mkdir();
-            if(appDir == false){
-                result = "TXT";
-            }
-        }
-
-        if (!appFolderTemp.exists() && !appFolderTemp.isDirectory()) {
-            appDir = appFolderTemp.mkdir();
-            if(appDir == false){
-                result = "TMP";
-            }
-        }
-
-        switch (result.toString()){
-            case "APP":
-                Toast.makeText(this, "Failed to create Application Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            case "CAM":
-                Toast.makeText(this, "Failed to create Camera Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            case "VID":
-                Toast.makeText(this, "Failed to create Video Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            case "AUD":
-                Toast.makeText(this, "Failed to create Audio Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            case "TXT":
-                Toast.makeText(this, "Failed to create Notes Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            case "TMP":
-                Toast.makeText(this, "Failed to create Audio Directory.", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(this, "Directory structure available.", Toast.LENGTH_SHORT).show();
+    public static void setBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if(getBitmapFromMemoryCache(key) == null) {
+            imageCache.put(key, bitmap);
         }
     }
 
@@ -348,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(record);
     }
 
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data ){
 
         switch (requestCode){
@@ -382,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case ACTIVITY_START_AUDIO_REC_APP :
                 switch (resultCode) {
                     case RESULT_OK :
+                        String audioFileLocation = "";
                         Toast.makeText(this, "Video saved successfully.\nLocation: " + audioFileLocation, Toast.LENGTH_SHORT).show();
                         break;
                     case RESULT_CANCELED:
@@ -436,16 +285,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
-        resultList = new ArrayList<>();
-        listFiles(getAppFolder());
-        removeUnwanted();
-        mediaFiles = null;
-        mediaFiles = getMediaFiles();
-        mediaFiles = sortFiles(mediaFiles);
-
-        RecyclerView.Adapter newAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
+        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+        RecyclerView.Adapter newAdapter = new ViewAdapter(mediaFiles, this.getBaseContext());
         recyclerView.swapAdapter(newAdapter, false);
-
     }
 
     @Override
@@ -457,13 +299,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void takeNotes(){
+    @Override
+    public void onResume(){
+        super.onResume();
+        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+        RecyclerView.Adapter newAdapter = new ViewAdapter(mediaFiles, this.getBaseContext());
+        recyclerView.swapAdapter(newAdapter, false);
+    }
+
+    private void takeNotes(){
         //on click action
         Intent intent = new Intent(getApplicationContext(), NotesActivity.class);
         startActivity(intent);
     }
 
-    public void takeVideo(){
+    private void takeVideo(){
         Intent vidCameraIntent = new Intent();
         vidCameraIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
 
@@ -480,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(vidCameraIntent, ACTIVITY_START_VIDEO_CAMERA_APP);
     }
 
-    public void takePhoto(){
+    private void takePhoto(){
         Intent callCameraApp = new Intent();
         callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         File imageFile = null;
@@ -493,52 +343,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
     }
 
-    public File saveVideo()
-            throws IOException
-    {
-        String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
-        String videoName = "VIDEO_" + timeStamp;
-
-        /*
-        Uri videoUri = data.getData();
-        String videoPath = getRealPathFromURI(videoUri);
-        File videoFile = new File(videoPath);
-        File tmpFile = new File(getAppFolderVideo() + "/" + videoName + ".mp4" );
-        videoFile.renameTo(tmpFile);
-        /*
-        try {
-            FileInputStream fis = new FileInputStream(videoFile);
-            //this is where you set whatever path you want to save it as:
-
-            //save the video to the File path
-            FileOutputStream fos = new FileOutputStream(tmpFile);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = fis.read(buf)) > 0) {
-                fos.write(buf, 0, len);
-            }
-            fis.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } */
-        File videoFile = File.createTempFile(videoName, ".mp4", getAppFolderVideo());
+    private File saveVideo() throws IOException {
+        String videoName = "VIDEO_" + InitiateApplication.getTimeStamp();
+        File videoFile = File.createTempFile(videoName, ".mp4", InitiateApplication.getAppFolderVideo());
         videoFileLocation = videoFile.getAbsolutePath();
         return videoFile;
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
-    File saveImage() throws IOException {
-        String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
-        String imageName = "IMAGE_" + timeStamp;
-        File image = File.createTempFile(imageName, ".jpg", getAppFolderCamera());
+    private File saveImage() throws IOException {
+        String imageName = "IMAGE_" + InitiateApplication.getTimeStamp();
+        File image = File.createTempFile(imageName, ".jpg", InitiateApplication.getAppFolderCamera());
         imageFileLocation = image.getAbsolutePath();
         return image;
     }
@@ -616,34 +430,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-
-        resultList = new ArrayList<>();
-        listFiles(getAppFolder());
-        removeUnwanted();
-        mediaFiles = null;
-        mediaFiles = getMediaFiles();
-        mediaFiles = sortFiles(mediaFiles);
-
-        RecyclerView.Adapter newAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
-        recyclerView.swapAdapter(newAdapter, false);
-    }
-
-    public static File getAppFolderCamera() {
-        return appFolderCamera;
-    }
-
-    public static File getAppFolderVideo() {
-        return appFolderVideo;
-    }
-
-    public static File getAppFolderAudio() {
-        return appFolderAudio;
-    }
-
-    public static File getAppFolderNotes() { return appFolderNotes; }
 
 
 }

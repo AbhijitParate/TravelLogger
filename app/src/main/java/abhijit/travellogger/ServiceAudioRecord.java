@@ -121,7 +121,7 @@ public class ServiceAudioRecord extends Service {
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
         String audioName = "AUDIO_" + timeStamp +"_";
 
-        File appFolderAudio = MainActivity.getAppFolderAudio();
+        File appFolderAudio = InitiateApplication.getAppFolderAudio();
 
         try {
             audioFile = File.createTempFile(audioName, ".aac", appFolderAudio);
