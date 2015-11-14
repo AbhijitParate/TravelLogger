@@ -27,8 +27,6 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -99,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listFiles(getAppFolder());
         removeUnwanted();
 
+        mediaFiles = null;
         mediaFiles = getMediaFiles();
         mediaFiles = sortFiles(mediaFiles);
 
@@ -169,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            imageCache.put(key, bitmap);
 //        }
 //    }
-
 
     private File getAppFolder(){
         return appFolder;
@@ -438,14 +436,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+        resultList = new ArrayList<>();
         listFiles(getAppFolder());
         removeUnwanted();
         mediaFiles = null;
         mediaFiles = getMediaFiles();
         mediaFiles = sortFiles(mediaFiles);
 
-        RecyclerView.Adapter newImageAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
-        recyclerView.swapAdapter(newImageAdapter, false);
+        RecyclerView.Adapter newAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
+        recyclerView.swapAdapter(newAdapter, false);
 
     }
 
@@ -539,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     File saveImage() throws IOException {
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
         String imageName = "IMAGE_" + timeStamp;
-        File image = File.createTempFile(imageName, ".jpg", appFolderCamera);
+        File image = File.createTempFile(imageName, ".jpg", getAppFolderCamera());
         imageFileLocation = image.getAbsolutePath();
         return image;
     }
@@ -621,14 +620,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume(){
         super.onResume();
 
+        resultList = new ArrayList<>();
         listFiles(getAppFolder());
         removeUnwanted();
         mediaFiles = null;
         mediaFiles = getMediaFiles();
         mediaFiles = sortFiles(mediaFiles);
 
-        RecyclerView.Adapter newImageAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
-        recyclerView.swapAdapter(newImageAdapter, false);
+        RecyclerView.Adapter newAdapter = new ViewAdapter(sortFiles(mediaFiles), this.getBaseContext());
+        recyclerView.swapAdapter(newAdapter, false);
     }
 
     public static File getAppFolderCamera() {
