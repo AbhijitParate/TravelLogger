@@ -70,11 +70,10 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-
     @Override
     public void onResume(){
         super.onResume();
-        if(isBRRegistered == false && isRecording == true ) {
+        if(!isBRRegistered && isRecording) {
             startButton.setVisibility(View.INVISIBLE);
             stopButton.setVisibility(View.VISIBLE);
             registerReceiver(broadcastReceiver, new IntentFilter(ServiceAudioRecord.BROADCAST_ACTION));

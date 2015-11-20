@@ -15,8 +15,8 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
 
     WeakReference<ImageView> imageViewWeakReference;
 
-    final static int IMAGE_HEIGHT = 603;
     final static int IMAGE_WIDTH = 1072;
+    final static int IMAGE_HEIGHT = 603;
 
     private File imageFile;
 

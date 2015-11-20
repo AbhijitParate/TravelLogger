@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:layout_below="@+id/note_title"
-            />
+            android:editable="true" />
 
     </RelativeLayout>
 

@@ -119,7 +119,7 @@ public class ServiceAudioRecord extends Service {
 
     public void startRecording() throws IOException {
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
-        String audioName = "AUDIO_" + timeStamp +"_";
+        String audioName = "AUDIO_";// + timeStamp +"_";
 
         File appFolderAudio = InitiateApplication.getAppFolderAudio();
 
@@ -130,10 +130,12 @@ public class ServiceAudioRecord extends Service {
             return;
         }
         recorder = new MediaRecorder();
+        recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         recorder.setOutputFile(audioFile.getAbsolutePath());
+
         recorder.prepare();
         recorder.start();
         startTime = SystemClock.elapsedRealtime();

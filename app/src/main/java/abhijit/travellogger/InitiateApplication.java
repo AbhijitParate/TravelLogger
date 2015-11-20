@@ -7,17 +7,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by abhijit on 10/28/15.
  */
 public class InitiateApplication {
-
-    //Package
-    private static String packageName = "abhijit.travellogger";
 
     //Permissions
 //    private static String WRITE = "android.permission.WRITE_EXTERNAL_STORAGE";
@@ -30,20 +25,23 @@ public class InitiateApplication {
     public static final File appFolderVideo = new File(appFolder + "/TLVideo");
     public static final File appFolderAudio = new File(appFolder + "/TLAudio");
     public static final File appFolderNotes = new File(appFolder + "/TLNotes");
+
+    public static File getAppFolderTemp() {
+        return appFolderTemp;
+    }
+
     public static final File appFolderTemp = new File(appFolder + "/Temp");
 
-    public static boolean checkPermissions(Context context, String permission){
+    public static boolean checkAppPermissions(Context context, String permission){
         PackageManager packageManager = context.getPackageManager();
-        int hasPermission = packageManager.checkPermission(permission,packageName);
-        if(hasPermission != PackageManager.PERMISSION_GRANTED){
-            return false;
-        }
-        return true;
+        String packageName = "abhijit.travellogger";
+        int hasPermission = packageManager.checkPermission(permission, packageName);
+        return hasPermission == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean checkDirectoryStructure(Context context){
 
-        boolean appDir = true;
+        boolean appDir;
         String result ="";
 
 //        //Check for base dir

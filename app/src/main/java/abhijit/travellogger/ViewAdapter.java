@@ -12,8 +12,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +43,7 @@ import java.util.List;
 /**
  * Created by abhijit on 10/25/15.
  */
-public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
+public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> implements View.OnLongClickListener, android.widget.PopupMenu.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener {
 
     //1. Mime types for view
     private static final int MIME_TYPE_INVALID  = 0;
@@ -63,8 +66,9 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 //        imageFiles = getImageFiles();
     }
 
+
     //2. Views for mimetypes
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         private View imageLayout;
         private View videoLayout;
@@ -80,7 +84,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         private TextView audioTitle;
         private ImageButton audioButton;
         private SeekBar audioSeekbar;
-
 
         private TextView noteTitle;
         private TextView noteBody;
@@ -194,25 +197,29 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         switch (mimeType){
             case "image/jpeg":
                 holder.getImageLayout().setVisibility(View.VISIBLE);
+                holder.getImageLayout().setTag("Image");
                 bindImage(holder, mediaFile);
                 break;
             case "video/mp4":
                 holder.getVideoLayout().setVisibility(View.VISIBLE);
+                holder.getVideoLayout().setTag("Video");
                 bindVideo(holder, mediaFile);
                 break;
             case "audio/aac":
                 holder.getAudioLayout().setVisibility(View.VISIBLE);
+                holder.getAudioLayout().setTag("Audio");
                 bindAudio(holder, mediaFile);
                 break;
             case "text/plain":
                 holder.getNoteLayout().setVisibility(View.VISIBLE);
+                holder.getNoteLayout().setTag("Note");
                 bindNote(holder, mediaFile);
                 break;
         }
     }
 
     //6. function for each viewType
-    public void bindAudio(final ViewHolder holder, final File file){
+    public void bindAudio(final ViewHolder holder, final File file) {
 
         TextView audioTitle = holder.getAudioTitle();
         audioTitle.setText("Title for for Audio");
@@ -258,6 +265,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     public void bindImage(ViewHolder holder, final File file){
 
         ImageView imageView = holder.getImageView();
+        imageView.setTag("ImageView");
         TextView  imageTitle  = holder.getImageTitle();
 
         //Place image in the imageLayout
@@ -278,6 +286,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 context.startActivity(intent);
             }
         });
+
+        imageView.setOnLongClickListener(this);
 
         //Set text for the ImageView
         imageTitle.setText("Title for Image.");
@@ -303,6 +313,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
         final TextView  title  = holder.getVideoTitle();
         final VideoView videoView = holder.getVideoView();
+        videoView.setTag("VideoView");
 
         title.setText("Title for Video.");
 
@@ -331,6 +342,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 return false;
             }
         });
+        videoView.setOnLongClickListener(this);
 
     }
 
@@ -338,6 +350,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
         TextView noteTitle = holder.getNoteTitle();
         TextView noteBody  = holder.getNoteBody();
+        noteBody.setTag("Notes");
 
         noteTitle.setText("Title for Note.");
         try {
@@ -353,8 +366,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         } catch (Exception e) {
             Toast.makeText(this.context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+        noteBody.setOnLongClickListener(this);
 
-//        holder.getNoteLayout().setVisibility(View.VISIBLE);
     }
 
     public String getMimeTypeFromFile(File file){
@@ -364,18 +377,18 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         return mimeType;
     }
 
-    private File[] getImageFiles(){
-        List<File> mediaList = new ArrayList<File>(Arrays.asList(mediaFiles));
-        Iterator<File> iterator = mediaList.iterator();
-        while (iterator.hasNext()) {
-            File f = iterator.next();
-            String mimeType = getMimeTypeFromFile(f);
-            if (mimeType == null || !(mimeType.equals("image/jpeg"))) {
-                iterator.remove();
-            }
-        }
-        return mediaList.toArray(new File[mediaList.size()]);
-    }
+//    private File[] getImageFiles(){
+//        List<File> mediaList = new ArrayList<File>(Arrays.asList(mediaFiles));
+//        Iterator<File> iterator = mediaList.iterator();
+//        while (iterator.hasNext()) {
+//            File f = iterator.next();
+//            String mimeType = getMimeTypeFromFile(f);
+//            if (mimeType == null || !(mimeType.equals("image/jpeg"))) {
+//                iterator.remove();
+//            }
+//        }
+//        return mediaList.toArray(new File[mediaList.size()]);
+//    }
 
     //Async tasks
     public static class AsyncDrawable extends BitmapDrawable {
@@ -418,5 +431,23 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         }
         return true;
     }
+
+    @Override
+    public boolean onLongClick(final View v) {
+        Toast.makeText(v.getContext(), "Long Press " + v.getTag(), Toast.LENGTH_SHORT).show();
+        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.TOP);
+        popup.inflate(R.menu.menu_video_item);
+        popup.setOnMenuItemClickListener(this);
+        popup.setGravity(Gravity.NO_GRAVITY);
+        popup.show();
+        return false;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        Toast.makeText(this.context, "Menu selected " + item.toString() , Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
 
 }
