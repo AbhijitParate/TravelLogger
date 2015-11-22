@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ApplicationUtility;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,9 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import abhijit.travellogger.ApplicationUtility.Helper;
-
-/**
+/*
  * Created by abhijit on 11/14/15.
  */
 public class FileGenerator {
@@ -30,14 +28,13 @@ public class FileGenerator {
     }
 
     private File[] sortFiles(File[] fileImagesDir){
-        File[] files = fileImagesDir;
-        Arrays.sort(files, new Comparator<File>() {
+        Arrays.sort(fileImagesDir, new Comparator<File>() {
             @Override
             public int compare(File lhs, File rhs) {
                 return Long.valueOf(rhs.lastModified()).compareTo(lhs.lastModified());
             }
         });
-        return files;
+        return fileImagesDir;
     }
 
     private void listFiles(File directory) {

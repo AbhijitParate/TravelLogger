@@ -1,10 +1,15 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ClickHandlers;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
+
+import abhijit.travellogger.AudioService.AudioRecord;
+import abhijit.travellogger.CameraService.CaptureImage;
+import abhijit.travellogger.CamcorderService.CaptureVideo;
+import abhijit.travellogger.NotesService.NotesActivity;
 
 /*
  * Created by abhijit on 11/16/15.

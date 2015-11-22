@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ClickHandlers;
 
 import android.view.View;
 import android.widget.Toast;

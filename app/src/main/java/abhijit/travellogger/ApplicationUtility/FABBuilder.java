@@ -10,7 +10,7 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
-import abhijit.travellogger.ClickHandlerForMain;
+import abhijit.travellogger.ClickHandlers.ClickHandlerForMain;
 import abhijit.travellogger.R;
 
 /*

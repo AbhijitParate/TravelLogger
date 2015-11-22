@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'net.the4thdimension:audio-wife:1.0.3'
+    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 }

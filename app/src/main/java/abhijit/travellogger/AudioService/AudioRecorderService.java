@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.AudioService;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -26,9 +26,10 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.R;
 
 
-public class ServiceAudioRecord extends Service {
+public class AudioRecorderService extends Service {
 
 
     MediaRecorder recorder;
@@ -36,7 +37,7 @@ public class ServiceAudioRecord extends Service {
     NotificationCompat.Builder mBuilder;
     private static Long startTime;
 
-    public static final String BROADCAST_ACTION = "abhijit.travellogger.AudioRecord";
+    public static final String BROADCAST_ACTION = "abhijit.travellogger.AudioService.AudioRecord";
     private final Handler handler = new Handler(Looper.getMainLooper());
     Intent intent;
 

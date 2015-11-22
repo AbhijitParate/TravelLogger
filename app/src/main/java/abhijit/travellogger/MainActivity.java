@@ -2,6 +2,7 @@ package abhijit.travellogger;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,12 +11,20 @@ import android.support.v7.widget.RecyclerView;
 import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import com.hudomju.swipe.OnItemClickListener;
+import com.hudomju.swipe.SwipeToDismissTouchListener;
+import com.hudomju.swipe.SwipeableItemClickListener;
 
 import java.io.File;
 
 import abhijit.travellogger.ApplicationUtility.FABBuilder;
+import abhijit.travellogger.ApplicationUtility.FileGenerator;
 import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.GPSService.AddressService;
+import abhijit.travellogger.GPSService.GPSService;
 import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
 import abhijit.travellogger.RecyclerView.SwipeHandlerForRecyclerView;
 
@@ -23,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     //RecyclerView
     private RecyclerView recyclerView;
+//    RecyclerView.Adapter viewAdapter;
+    private RecyclerViewAdapter viewAdapter;
 
     //for Camera Intent
     private static final int ACTIVITY_START_CAMERA_APP = 1;
@@ -61,22 +72,38 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerView.Adapter viewAdapter = new RecyclerViewAdapter(mediaFiles, this);
+        viewAdapter = new RecyclerViewAdapter(mediaFiles);
         recyclerView.setAdapter(viewAdapter);
 
         // To add swipe feature
         SwipeHandlerForRecyclerView.create(this, recyclerView).attachToRecyclerView(recyclerView);
 
-        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
-        final int cacheSize = maxMemorySize / 10;
+        // Toast GPS
+        ToastGPS();
 
-        imageCache = new LruCache<String, Bitmap>(cacheSize) {
 
-            @Override
-            protected int sizeOf(String key, Bitmap value) {
-                return value.getByteCount() / 1024;
+//        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+//        final int cacheSize = maxMemorySize / 10;
+//
+//        imageCache = new LruCache<String, Bitmap>(cacheSize) {
+//
+//            @Override
+//            protected int sizeOf(String key, Bitmap value) {
+//                return value.getByteCount() / 1024;
+//            }
+//        };
+    }
+
+    private void ToastGPS(){
+        GPSService gpsService = new GPSService(this);
+        if(gpsService.canGetLocation()){
+            if(gpsService.isLocationAvailable()){
+                String address = AddressService.getLocationName(this, gpsService.getLocation());
+                Toast.makeText(this, "Address: " + address, Toast.LENGTH_LONG).show();
             }
-        };
+        } else {
+            gpsService.showSettingsAlert();
+        }
     }
 
     @Override
@@ -89,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-        RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles, this.getBaseContext());
-        recyclerView.swapAdapter(newAdapter, false);
+//        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+//        RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles);
+//        recyclerView.swapAdapter(newAdapter, false);
     }
 
     @Override
@@ -148,16 +175,12 @@ public class MainActivity extends AppCompatActivity {
             case ACTIVITY_START_VIDEO_CAMERA_APP :
                 switch (resultCode) {
                     case RESULT_OK :
-                        Uri videoUri = data.getData();
-//                        Toast.makeText(this, "Video saved successfully." , Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "Video saved successfully. \nLocation : " + videoUri.toString() , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Video saved successfully." , Toast.LENGTH_SHORT).show();
                         break;
                     case RESULT_CANCELED:
-//                        temp.delete();
                         Toast.makeText(this, "Recording canceled.", Toast.LENGTH_SHORT).show();
                         break;
                     default:
-//                        temp.delete();
                         Toast.makeText(this, "Recording failed.", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -214,14 +237,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
 
-
             default:
                 break;
         }
-
-        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-        RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles, this.getBaseContext());
-        recyclerView.swapAdapter(newAdapter, false);
+//        viewAdapter.addItem(1);
     }
 
     public static Bitmap getBitmapFromMemoryCache(String key) {

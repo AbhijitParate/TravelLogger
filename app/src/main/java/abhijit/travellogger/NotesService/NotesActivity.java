@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.NotesService;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.R;
 
 public class NotesActivity extends AppCompatActivity implements View.OnClickListener{
 

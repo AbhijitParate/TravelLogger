@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.CamcorderService;
 
 import android.content.Intent;
 import android.net.Uri;

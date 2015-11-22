@@ -20,6 +20,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     private View videoLayout;
     private View audioLayout;
     private View noteLayout;
+    private View dismissLayout;
 
     private TextView imageTitle;
     private ImageView imageView;
@@ -34,12 +35,16 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     private TextView noteTitle;
     private TextView noteBody;
 
+    private TextView undoText;
+    private TextView deleteText;
+
     public RecyclerViewHolder(View view){
         super(view);
         imageLayout = view.findViewById(R.id.image);
         videoLayout = view.findViewById(R.id.video);
         audioLayout = view.findViewById(R.id.audio);
         noteLayout = view.findViewById(R.id.note);
+        dismissLayout = view.findViewById(R.id.dismiss_layout);
 
         imageTitle = (TextView) view.findViewById(R.id.image_title);
         imageView = (ImageView) view.findViewById(R.id.image_view);
@@ -53,6 +58,9 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         noteTitle = (TextView) view.findViewById(R.id.note_title);
         noteBody = (TextView) view.findViewById(R.id.note_text);
+
+        undoText = (TextView) view.findViewById(R.id.txt_undo);
+        deleteText = (TextView) view.findViewById(R.id.txt_delete);
 
     }
 

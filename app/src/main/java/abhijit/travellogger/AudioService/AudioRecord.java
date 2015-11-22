@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.AudioService;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,15 +6,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import abhijit.travellogger.R;
 
 public class AudioRecord extends AppCompatActivity implements View.OnClickListener {
 
@@ -76,7 +76,7 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
         if(!isBRRegistered && isRecording) {
             startButton.setVisibility(View.INVISIBLE);
             stopButton.setVisibility(View.VISIBLE);
-            registerReceiver(broadcastReceiver, new IntentFilter(ServiceAudioRecord.BROADCAST_ACTION));
+            registerReceiver(broadcastReceiver, new IntentFilter(AudioRecorderService.BROADCAST_ACTION));
             isBRRegistered = true;
         }
     }
@@ -90,10 +90,10 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
                 startButton.setVisibility(View.INVISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
                 stopButton.setEnabled(true);
-                startService(new Intent(this, ServiceAudioRecord.class));
+                startService(new Intent(this, AudioRecorderService.class));
                 isRecording = true;
                 if(!isBRRegistered) {
-                    registerReceiver(broadcastReceiver, new IntentFilter(ServiceAudioRecord.BROADCAST_ACTION));
+                    registerReceiver(broadcastReceiver, new IntentFilter(AudioRecorderService.BROADCAST_ACTION));
                     isBRRegistered = true;
                 }
                 break;
@@ -102,7 +102,7 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
                 startButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.INVISIBLE);
                 stopButton.setEnabled(false);
-                stopService(new Intent(this, ServiceAudioRecord.class));
+                stopService(new Intent(this, AudioRecorderService.class));
                 isRecording = false;
                 if(isBRRegistered) {
                     unregisterReceiver(broadcastReceiver);

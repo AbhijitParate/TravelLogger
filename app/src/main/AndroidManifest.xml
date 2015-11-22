@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="abhijit.travellogger" >
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission-sdk-23 android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA" />
@@ -24,20 +27,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AudioRecord"
+            android:name=".AudioService.AudioRecord"
             android:label="@string/title_activity_audio_record"
             android:launchMode="singleTask"
             android:persistent="true" >
         </activity>
 
         <service
-            android:name=".ServiceAudioRecord"
+            android:name=".AudioService.AudioRecorderService"
             android:enabled="true"
             android:exported="true">
         </service>
 
         <activity
-            android:name=".NotesActivity" >
+            android:name=".NotesService.NotesActivity" >
         </activity>
     </application>
 

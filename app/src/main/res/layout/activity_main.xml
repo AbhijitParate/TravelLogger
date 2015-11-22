@@ -11,15 +11,10 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
         android:id="@+id/recycleView"
         />
-
-    <MediaController
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/mediaController"
-        android:layout_alignParentBottom="true"
-        android:enabled = "false"
-    />
 
 </RelativeLayout>

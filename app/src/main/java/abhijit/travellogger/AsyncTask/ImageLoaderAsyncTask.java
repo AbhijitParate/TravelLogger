@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.AsyncTask;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
+import abhijit.travellogger.MainActivity;
 import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
 
 /**
