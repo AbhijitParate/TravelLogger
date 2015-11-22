@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ApplicationUtility;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +10,10 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
-/**
+import abhijit.travellogger.ClickHandlerForMain;
+import abhijit.travellogger.R;
+
+/*
  * Created by abhijit on 11/14/15.
  */
 

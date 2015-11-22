@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ApplicationUtility;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,7 +8,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 
-/**
+/*
  * Created by abhijit on 10/28/15.
  */
 public class Helper {

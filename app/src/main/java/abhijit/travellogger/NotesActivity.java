@@ -1,6 +1,5 @@
 package abhijit.travellogger;
 
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +14,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.util.Date;
+
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
 
 public class NotesActivity extends AppCompatActivity implements View.OnClickListener{
 

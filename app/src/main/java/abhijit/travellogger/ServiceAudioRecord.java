@@ -25,6 +25,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+
 
 public class ServiceAudioRecord extends Service {
 

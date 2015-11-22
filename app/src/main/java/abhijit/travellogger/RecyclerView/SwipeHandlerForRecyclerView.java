@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.RecyclerView;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,10 +6,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
-/**
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.FileGenerator;
+
+/*
  * Created by abhijit on 11/19/15.
  */
 public class SwipeHandlerForRecyclerView {
@@ -39,6 +40,7 @@ public class SwipeHandlerForRecyclerView {
 //                    mediaList.remove(itemPosition);
 //                    mediaFiles = new File[mediaList.size()];
 //                    mediaList.toArray(mediaFiles);
+//                    recyclerView.getAdapter().deleteItem(itemPosition);
                     Toast.makeText(context.getApplicationContext(), "File deleted successfully.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context.getApplicationContext(), "Failed to delete file.", Toast.LENGTH_SHORT).show();
@@ -48,9 +50,9 @@ public class SwipeHandlerForRecyclerView {
 //                recyclerView.getAdapter().notifyItemRangeChanged(itemPosition, mediaFiles.length - 1);
 //                recyclerView.getAdapter().notifyDataSetChanged();
 
-                mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-                RecyclerView.Adapter newAdapter = new ViewAdapter(mediaFiles, context.getApplicationContext());
-                recyclerView.swapAdapter(newAdapter, false);
+//                mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+//                RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles, context.getApplicationContext());
+//                recyclerView.swapAdapter(newAdapter, false);
             }
         };
 

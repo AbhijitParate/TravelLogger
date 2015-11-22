@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
+import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
+
 /**
  * Created by abhijit on 11/12/15.
  */
@@ -46,10 +48,10 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
         if(bitmap != null && imageViewWeakReference != null) {
             ImageView imageView = imageViewWeakReference.get();
             //Uncomment this to use async task
-            ImageLoaderAsyncTask bitmapWorkerTask = ViewAdapter.getImageLoaderTask(imageView);
-            if(this == bitmapWorkerTask && imageView != null){
-                imageView.setImageBitmap(bitmap);
-            }
+//            ImageLoaderAsyncTask bitmapWorkerTask = RecyclerViewAdapter.getImageLoaderTask(imageView);
+//            if(this == bitmapWorkerTask && imageView != null){
+//                imageView.setImageBitmap(bitmap);
+//            }
         }
     }
 

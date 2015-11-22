@@ -1,4 +1,4 @@
-package abhijit.travellogger;
+package abhijit.travellogger.ApplicationUtility;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -9,7 +9,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
-/**
+/*
  * Created by abhijit on 10/28/15.
  */
 public class InitiateApplication {

@@ -14,6 +14,11 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import abhijit.travellogger.ApplicationUtility.FABBuilder;
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
+import abhijit.travellogger.RecyclerView.SwipeHandlerForRecyclerView;
+
 public class MainActivity extends AppCompatActivity {
 
     //RecyclerView
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerView.Adapter viewAdapter = new ViewAdapter(mediaFiles, this);
+        RecyclerView.Adapter viewAdapter = new RecyclerViewAdapter(mediaFiles, this);
         recyclerView.setAdapter(viewAdapter);
 
         // To add swipe feature
@@ -85,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-        RecyclerView.Adapter newAdapter = new ViewAdapter(mediaFiles, this.getBaseContext());
+        RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles, this.getBaseContext());
         recyclerView.swapAdapter(newAdapter, false);
     }
 
@@ -215,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-        RecyclerView.Adapter newAdapter = new ViewAdapter(mediaFiles, this.getBaseContext());
+        RecyclerView.Adapter newAdapter = new RecyclerViewAdapter(mediaFiles, this.getBaseContext());
         recyclerView.swapAdapter(newAdapter, false);
     }
 

@@ -7,6 +7,8 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.io.IOException;
 
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+
 /*
  * Created by abhijit on 11/16/15.
  */

@@ -1,15 +1,13 @@
 package abhijit.travellogger;
 
-import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.IOException;
+
+import abhijit.travellogger.ApplicationUtility.InitiateApplication;
 
 /*
  * Created by abhijit on 11/16/15.
