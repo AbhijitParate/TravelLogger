@@ -38,12 +38,14 @@ public class FileGenerator {
     }
 
     private void listFiles(File directory) {
-        File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile() && !file.isDirectory()) {
-                this.resultList.add(file);
-            } else if (file.isDirectory()) {
-                listFiles(file);
+        if(directory != null) {
+            File[] fList = directory.listFiles();
+            for (File file : fList) {
+                if (file.isFile() && !file.isDirectory()) {
+                    this.resultList.add(file);
+                } else if (file.isDirectory()) {
+                    listFiles(file);
+                }
             }
         }
     }

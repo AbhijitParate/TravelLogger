@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,7 +34,7 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_audio_record);
+        setContentView(R.layout.layout_activity_audio_record);
         elapsedTime = (TextView)findViewById(R.id.recordedTime);
 
         startButton = (ImageButton)findViewById(R.id.start);
@@ -85,6 +87,15 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getTag().toString()) {
             case (START):
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+                        String[] permissions = new String[]{android.Manifest.permission.RECORD_AUDIO};
+                        if (shouldShowRequestPermissionRationale(android.Manifest.permission.RECORD_AUDIO)){
+                            requestPermissions(permissions,1);
+                        }
+                        break;
+                    }
+                }
                 isRecording = true;
                 startButton.setEnabled(false);
                 startButton.setVisibility(View.INVISIBLE);
@@ -92,7 +103,7 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
                 stopButton.setEnabled(true);
                 startService(new Intent(this, AudioRecorderService.class));
                 isRecording = true;
-                if(!isBRRegistered) {
+                if (!isBRRegistered) {
                     registerReceiver(broadcastReceiver, new IntentFilter(AudioRecorderService.BROADCAST_ACTION));
                     isBRRegistered = true;
                 }

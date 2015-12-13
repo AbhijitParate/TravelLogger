@@ -1,8 +1,11 @@
 package abhijit.travellogger.ClickHandlers;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,7 +17,7 @@ import abhijit.travellogger.NotesService.NotesActivity;
 /*
  * Created by abhijit on 11/16/15.
  */
-public class ClickHandlerForMain extends CustomClickHandler {
+public class ClickHandlerTravelLoggerHome extends ClickHandlerCustom {
 
         //tags to select the appropriate activity
         private static final String TAG_FAB = "Add new Photo, Video, Audio or Note.";
@@ -39,7 +42,7 @@ public class ClickHandlerForMain extends CustomClickHandler {
         Activity mainActivity;
         Context mainContext;
 
-        public ClickHandlerForMain(Activity activity, Context context) {
+        public ClickHandlerTravelLoggerHome(Activity activity, Context context) {
             mainActivity = activity;
             mainContext = context;
         }
@@ -51,13 +54,30 @@ public class ClickHandlerForMain extends CustomClickHandler {
             Intent tempIntent;
             switch (v.getTag().toString()) {
                 case (TAG_CAMERA):
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (mainActivity.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+                            String[] permissions = new String[]{android.Manifest.permission.CAMERA};
+                            if (mainActivity.shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)){
+                                mainActivity.requestPermissions(permissions, 1);
+                            }
+                            break;
+                        }
+                    }
                     tempIntent = CaptureImage.takePhoto();
                     mainActivity.startActivityForResult(tempIntent, ACTIVITY_START_CAMERA_APP);
                     break;
 
                 case (TAG_CAMCORDER):
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (mainActivity.checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+                            String[] permissions = new String[]{android.Manifest.permission.CAMERA};
+                            if (mainActivity.shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)){
+                                mainActivity.requestPermissions(permissions, 1);
+                            }
+                            break;
+                        }
+                    }
                     tempIntent = CaptureVideo.takeVideo();
-//                mainActivity.setImageFileLocation(tempIntent.getStringExtra("file_path"));
                     mainActivity.startActivityForResult(tempIntent, ACTIVITY_START_VIDEO_CAMERA_APP);
                     break;
 
@@ -83,18 +103,16 @@ public class ClickHandlerForMain extends CustomClickHandler {
                     break;
 
                 case (TAG_CAMERA):
-                    Intent imageGalleryIntent = new Intent();
+                    Intent imageGalleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     imageGalleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
                     imageGalleryIntent.setType("*/*");
                     String[] imageMT = {"image/jpg", "image/jpeg"};
                     imageGalleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, imageMT);
-//                imageGalleryIntent.setType("image/jpg|image/jpeg|image/gif|image/png ");
                     imageGalleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                     mainActivity.startActivityForResult(Intent.createChooser(imageGalleryIntent, "Select a Picture"), ACTIVITY_START_GALLERY_PHOTO);
                     break;
 
                 case (TAG_CAMCORDER):
-//                Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     Intent videoGalleryIntent = new Intent();
                     videoGalleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
                     videoGalleryIntent.setType("*/*");

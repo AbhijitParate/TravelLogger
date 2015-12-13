@@ -14,23 +14,14 @@ import abhijit.travellogger.ApplicationUtility.InitiateApplication;
  */
 public class CaptureVideo {
 
+    public static String TEMP_VIDEO = "camera_video.mp4";
+
     public static Intent takeVideo(){
         Intent videoCameraIntent = new Intent();
         videoCameraIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
-
-        File videoFile = null;
-        try {
-            videoFile = saveVideo();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File videoFile = new File(InitiateApplication.getAppFolderTemp(), TEMP_VIDEO);
         videoCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
         videoCameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
         return videoCameraIntent;
-    }
-
-    private static File saveVideo() throws IOException {
-        String videoName = "/VIDEO_" ;// + InitiateApplication.getTimeStamp();
-        return File.createTempFile(videoName, ".mp4", InitiateApplication.getAppFolderVideo());
     }
 }

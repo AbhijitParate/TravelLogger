@@ -7,6 +7,9 @@ import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /*
  * Created by abhijit on 10/28/15.
@@ -33,5 +36,10 @@ public class Helper {
                 cursor.close();
             }
         }
+    }
+
+    public static String getTimeStamp(){
+        SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+        return s.format(new Date());
     }
 }

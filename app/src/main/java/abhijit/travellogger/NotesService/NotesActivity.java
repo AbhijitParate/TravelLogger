@@ -26,7 +26,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes);
+        setContentView(R.layout.layout_activity_notes);
 
         editText = (EditText) findViewById(R.id.editText);
         saveButton = (Button) findViewById(R.id.saveNote);
@@ -40,9 +40,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         String noteName = "NOTE_" + timeStamp;
 
         try {
-//            File f = File.createTempFile(Environment.getExternalStorageDirectory().toString() + "/test", ".txt");
             File f =  new File(InitiateApplication.getAppFolderNotes().toString()+"/" +noteName + ".txt");
-//            File f = File.createTempFile(noteName, ".txt", MainActivity.getAppFolderNotes());
             if(!f.exists()){
                 f.createNewFile();
             }

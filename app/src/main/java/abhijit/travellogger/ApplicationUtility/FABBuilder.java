@@ -3,6 +3,7 @@ package abhijit.travellogger.ApplicationUtility;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -10,7 +11,7 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
-import abhijit.travellogger.ClickHandlers.ClickHandlerForMain;
+import abhijit.travellogger.ClickHandlers.ClickHandlerTravelLoggerHome;
 import abhijit.travellogger.R;
 
 /*
@@ -31,8 +32,16 @@ public class FABBuilder {
     private static final String TAG_AUDIO_RECORDER = "Audio Recorder";
     private static final String TAG_NOTE = "Notes";
 
-    //Main FAB Button
+    //Main FAB Menu
     private FloatingActionMenu actionMenu;
+
+    //Main FAB
+    FloatingActionButton actionButton;
+    //Sub FAB
+    SubActionButton buttonCamera;
+    SubActionButton buttonCamcorder;
+    SubActionButton buttonAudioRecorder;
+    SubActionButton buttonNote;
 
     //Main Activity Context
     private Context mainContext;
@@ -51,7 +60,7 @@ public class FABBuilder {
         imageView.setScaleY((float) 0.25);
 
 //Add it to layout
-        FloatingActionButton actionButton;
+
         FloatingActionButton.LayoutParams fab_params = new FloatingActionButton.LayoutParams(FAB_BUTTON_SIZE, FAB_BUTTON_SIZE);
         actionButton = new FloatingActionButton.Builder(mainActivity)
                 .setContentView(imageView)
@@ -79,10 +88,10 @@ public class FABBuilder {
         itemBuilder.setLayoutParams(params);
 
 //Build sub menu items
-        SubActionButton buttonCamera = itemBuilder.setContentView(camera).build();
-        SubActionButton buttonCamcorder = itemBuilder.setContentView(camcorder).build();
-        SubActionButton buttonAudioRecorder = itemBuilder.setContentView(audioRecorder).build();
-        SubActionButton buttonNote = itemBuilder.setContentView(note).build();
+        buttonCamera = itemBuilder.setContentView(camera).build();
+        buttonCamcorder = itemBuilder.setContentView(camcorder).build();
+        buttonAudioRecorder = itemBuilder.setContentView(audioRecorder).build();
+        buttonNote = itemBuilder.setContentView(note).build();
 
 //Set tags to each sub button
         actionButton.setTag(TAG_FAB);
@@ -92,19 +101,19 @@ public class FABBuilder {
         buttonNote.setTag(TAG_NOTE);
 
 //Set OnClickListener to all sub buttons
-        ClickHandlerForMain clickHandlerForMain = new ClickHandlerForMain(mainActivity,mainContext);
+        ClickHandlerTravelLoggerHome clickHandlerTravelLoggerHome = new ClickHandlerTravelLoggerHome(mainActivity,mainContext);
 
-        buttonCamera.setOnClickListener(clickHandlerForMain);
-        buttonCamcorder.setOnClickListener(clickHandlerForMain);
-        buttonAudioRecorder.setOnClickListener(clickHandlerForMain);
-        buttonNote.setOnClickListener(clickHandlerForMain);
+        buttonCamera.setOnClickListener(clickHandlerTravelLoggerHome);
+        buttonCamcorder.setOnClickListener(clickHandlerTravelLoggerHome);
+        buttonAudioRecorder.setOnClickListener(clickHandlerTravelLoggerHome);
+        buttonNote.setOnClickListener(clickHandlerTravelLoggerHome);
 
 //Set OnLongClickListener
-        actionButton.setOnLongClickListener(clickHandlerForMain);
-        buttonCamera.setOnLongClickListener(clickHandlerForMain);
-        buttonCamcorder.setOnLongClickListener(clickHandlerForMain);
-        buttonAudioRecorder.setOnLongClickListener(clickHandlerForMain);
-        buttonNote.setOnLongClickListener(clickHandlerForMain);
+        actionButton.setOnLongClickListener(clickHandlerTravelLoggerHome);
+        buttonCamera.setOnLongClickListener(clickHandlerTravelLoggerHome);
+        buttonCamcorder.setOnLongClickListener(clickHandlerTravelLoggerHome);
+        buttonAudioRecorder.setOnLongClickListener(clickHandlerTravelLoggerHome);
+        buttonNote.setOnLongClickListener(clickHandlerTravelLoggerHome);
 
 
 //Add the sub menu items to fab
@@ -122,6 +131,18 @@ public class FABBuilder {
         if (actionMenu.isOpen()) {
             actionMenu.close(true);
         }
+    }
+
+    public FloatingActionButton getFAB(){
+        return actionButton;
+    }
+
+    public void makeVisible(){
+        actionButton.setVisibility(View.VISIBLE);
+    }
+
+    public void makeInvisible(){
+        actionButton.setVisibility(View.INVISIBLE);
     }
 
 }

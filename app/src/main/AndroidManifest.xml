@@ -1,46 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="abhijit.travellogger" >
+    package="abhijit.travellogger">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission-sdk-23 android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission-sdk-23 android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".ApplicationUtility.TravelLogger"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:screenOrientation="portrait"
+        >
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name=".TravelLoggerHomeActivity"
+            android:label="@string/title_activity_travel_logger_home"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TripManager.TripManagerActivity"
+            android:label="@string/title_activity_trip_manager"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".AudioService.AudioRecord"
             android:label="@string/title_activity_audio_record"
             android:launchMode="singleTask"
-            android:persistent="true" >
-        </activity>
+            android:persistent="true"
+            android:screenOrientation="portrait"
+            />
 
         <service
             android:name=".AudioService.AudioRecorderService"
             android:enabled="true"
-            android:exported="true">
-        </service>
+            android:exported="true" />
+
+        <activity android:name=".NotesService.NotesActivity"
+            android:screenOrientation="portrait"
+            />
+
+        <receiver
+            android:name=".WidgetHandler.TLWidgetProvider"
+            android:label="TLWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="abhijit.travellogger.WidgetHandler.ACTION_CAMERA" />
+                <action android:name="abhijit.travellogger.WidgetHandler.ACTION_CAMCORDER" />
+                <action android:name="abhijit.travellogger.WidgetHandler.ACTION_RECORDER" />
+                <action android:name="abhijit.travellogger.WidgetHandler.ACTION_NOTES" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
 
         <activity
-            android:name=".NotesService.NotesActivity" >
+            android:name=".SplashScreen.SplashScreenActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

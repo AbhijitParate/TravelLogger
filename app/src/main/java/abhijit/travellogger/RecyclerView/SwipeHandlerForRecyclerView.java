@@ -39,7 +39,16 @@ public class SwipeHandlerForRecyclerView {
                 final File fileToDelete = mediaList.get(itemPosition);
 
                 Snackbar snackbarDelete = Snackbar
-                        .make(recyclerView , "Item deleted", Snackbar.LENGTH_LONG)
+                        .make(recyclerView, "Item deleted", Snackbar.LENGTH_LONG)
+                        .setCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT){
+                                    fileToDelete.delete();
+                                    Toast.makeText(context.getApplicationContext(), "File deleted successfully.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
                         .setAction("UNDO", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -48,20 +57,10 @@ public class SwipeHandlerForRecyclerView {
                                 snackbarUndo.show();
                             }
                         });
-
                 snackbarDelete.show();
 
-
-
-//                if (fileToDelete.delete()){
-                    adapter.deleteItem(itemPosition);
-//                    Toast.makeText(context.getApplicationContext(), "File deleted successfully.", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(context.getApplicationContext(), "Failed to delete file.", Toast.LENGTH_SHORT).show();
-//                }
-
+                adapter.deleteItem(itemPosition);
              }
-
         };
 
         return new ItemTouchHelper(simpleCallback);

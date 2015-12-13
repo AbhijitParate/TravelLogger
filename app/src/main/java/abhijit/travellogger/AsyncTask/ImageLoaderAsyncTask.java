@@ -8,10 +8,9 @@ import android.widget.ImageView;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import abhijit.travellogger.MainActivity;
-import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
+import abhijit.travellogger.TravelLoggerHomeActivity;
 
-/**
+/*
  * Created by abhijit on 11/12/15.
  */
 public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
@@ -37,7 +36,7 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
 //        return decodeBitmapFromFile(params[0]);
         Bitmap bitmap = decodeBitmapFromFile(imageFile);
         //Uncomment this to use async task
-        MainActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
+        TravelLoggerHomeActivity.setBitmapToMemoryCache(imageFile.getName(), bitmap);
         return bitmap;
     }
 

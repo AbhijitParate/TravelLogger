@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:backgroundTint="#000000"
+    android:backgroundTintMode="add">
+
+    <ImageButton
+        android:layout_width="@dimen/widget_button_size"
+        android:layout_height="@dimen/widget_button_size"
+        android:maxWidth="@dimen/widget_button_size"
+        android:maxHeight="@dimen/widget_button_size"
+        android:id="@+id/noteButton"
+        android:background="@drawable/note"
+        android:scaleType="fitXY"
+        android:contentDescription="Note"
+        android:layout_marginRight="@dimen/widget_button_horizontal_spacing"
+        android:layout_marginLeft="@dimen/widget_button_horizontal_spacing"
+        android:layout_alignTop="@+id/audioButton"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="@dimen/widget_button_size"
+        android:layout_height="@dimen/widget_button_size"
+        android:maxWidth="@dimen/widget_button_size"
+        android:maxHeight="@dimen/widget_button_size"
+        android:id="@+id/audioButton"
+        android:background="@drawable/mic"
+        android:scaleType="fitXY"
+        android:contentDescription="Recorder"
+        android:layout_marginRight="@dimen/widget_button_horizontal_spacing"
+        android:layout_marginLeft="@dimen/widget_button_horizontal_spacing"
+        android:layout_alignTop="@+id/camcorderButton"
+        android:layout_toEndOf="@+id/noteButton" />
+
+
+    <ImageButton
+        android:layout_width="@dimen/widget_button_size"
+        android:layout_height="@dimen/widget_button_size"
+        android:maxWidth="@dimen/widget_button_size"
+        android:maxHeight="@dimen/widget_button_size"
+        android:id="@+id/camcorderButton"
+        android:background="@drawable/camcorder"
+        android:scaleType="fitXY"
+        android:contentDescription="Camcorder"
+        android:layout_marginRight="@dimen/widget_button_horizontal_spacing"
+        android:layout_marginLeft="@dimen/widget_button_horizontal_spacing"
+        android:layout_alignTop="@+id/cameraButton"
+        android:layout_toEndOf="@+id/audioButton" />
+
+
+    <ImageButton
+        android:layout_width="@dimen/widget_button_size"
+        android:layout_height="@dimen/widget_button_size"
+        android:maxWidth="@dimen/widget_button_size"
+        android:maxHeight="@dimen/widget_button_size"
+        android:id="@+id/cameraButton"
+        android:background="@drawable/camera"
+        android:scaleType="fitXY"
+        android:contentDescription="Camera"
+        android:layout_marginRight="@dimen/widget_button_horizontal_spacing"
+        android:layout_marginLeft="@dimen/widget_button_horizontal_spacing"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/camcorderButton" />
+
+
+</RelativeLayout>

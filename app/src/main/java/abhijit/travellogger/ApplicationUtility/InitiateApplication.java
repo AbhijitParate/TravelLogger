@@ -1,23 +1,20 @@
 package abhijit.travellogger.ApplicationUtility;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Created by abhijit on 10/28/15.
  */
 public class InitiateApplication {
-
-    //Permissions
-//    private static String WRITE = "android.permission.WRITE_EXTERNAL_STORAGE";
-//    private static String READ = "android.permission.READ_EXTERNAL_STORAGE";
-//    private static String INTERNET = "android.permission.INTERNET";
 
     //App Folder Setup
     public static final File appFolder = new File(Environment.getExternalStorageDirectory() + "/TravelLogger");
@@ -32,11 +29,23 @@ public class InitiateApplication {
 
     public static final File appFolderTemp = new File(appFolder + "/Temp");
 
-    public static boolean checkAppPermissions(Context context, String permission){
-        PackageManager packageManager = context.getPackageManager();
-        String packageName = "abhijit.travellogger";
-        int hasPermission = packageManager.checkPermission(permission, packageName);
-        return hasPermission == PackageManager.PERMISSION_GRANTED;
+    public static boolean checkAppPermissions(Activity activity){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<String> missingPermissions = new ArrayList<String>();
+            for( String permission : Constants.PERMISSION_LIST ) {
+                if (activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED ){
+                    missingPermissions.add(permission);
+                }
+            }
+            if (!missingPermissions.isEmpty()) {
+                for (String permission: missingPermissions) {
+                    if (activity.shouldShowRequestPermissionRationale(permission)){
+                        activity.requestPermissions(new String[]{permission}, 1);
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean checkDirectoryStructure(Context context){
@@ -115,10 +124,6 @@ public class InitiateApplication {
 
         }
         return true;
-    }
-
-    public static String getTimeStamp(){
-        return DateFormat.getDateTimeInstance().format(new Date());
     }
 
     public static File getAppFolder(){

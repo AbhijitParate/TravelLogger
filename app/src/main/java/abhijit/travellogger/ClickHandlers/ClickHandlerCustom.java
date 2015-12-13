@@ -6,7 +6,7 @@ import android.widget.Toast;
 /**
  * Created by abhijit on 11/19/15.
  */
-public class CustomClickHandler implements View.OnClickListener, View.OnLongClickListener {
+public class ClickHandlerCustom implements View.OnClickListener, View.OnLongClickListener {
 
     @Override
     public void onClick(View v) {
