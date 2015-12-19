@@ -83,7 +83,6 @@
         <activity android:name=".AudioService.EditAudioActivity" />
         <activity android:name=".NotesService.EditNoteActivity" />
         <activity android:name=".GalleryService.EditGallery">
-
         </activity>
     </application>
 
