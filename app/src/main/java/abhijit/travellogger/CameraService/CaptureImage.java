@@ -17,7 +17,7 @@ public class CaptureImage {
 
     public static String TEMP_IMAGE = "camera_image.jpg";
 
-    public static Intent takePhoto(){
+    public static Intent prapareCameraIntent(){
         Intent cameraIntent = new Intent();
         cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         File imageFile = new File(InitiateApplication.getAppFolderTemp(), TEMP_IMAGE);

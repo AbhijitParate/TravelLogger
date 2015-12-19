@@ -11,19 +11,28 @@
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/saveNote"
-        android:layout_alignParentTop="true"
         android:text="Add notes here..."
         android:textAlignment="textStart"
         android:gravity="top"
-        android:contextClickable="true"/>
+        android:contextClickable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        tools:ignore="RtlCompat"
+        android:layout_below="@+id/button_save_text" />
     <Button
-        android:id="@+id/saveNote"
+        android:id="@+id/button_save_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save Note"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CLEAR"
+        android:id="@+id/button_clear_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

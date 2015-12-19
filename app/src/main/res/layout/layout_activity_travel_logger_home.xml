@@ -12,17 +12,18 @@
     <include
         layout="@layout/app_bar_travel_logger_home"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+
+        />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view_home"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_drawer_header"
         app:menu="@menu/nav_drawer_menu" />
-
-
 
 </android.support.v4.widget.DrawerLayout>

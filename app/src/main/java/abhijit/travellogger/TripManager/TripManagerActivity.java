@@ -2,8 +2,6 @@ package abhijit.travellogger.TripManager;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +18,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -27,8 +26,6 @@ import java.util.List;
 import abhijit.travellogger.ApplicationUtility.Constants;
 import abhijit.travellogger.ClickHandlers.ClickHandlerNavigationDrawer;
 import abhijit.travellogger.R;
-import abhijit.travellogger.ShardedPrefHandler;
-import abhijit.travellogger.TravelLoggerHomeActivity;
 
 public class TripManagerActivity
         extends AppCompatActivity
@@ -36,6 +33,7 @@ public class TripManagerActivity
 {
     private FloatingActionButton fab;
     private ListView tripListView;
+    private TextView noTrips;
     private List<Trip> tripList;
     private TripDBManager dbManager;
     private Toolbar toolbar;
@@ -53,6 +51,9 @@ public class TripManagerActivity
         buildNavDrawer();
         fab = createFAB();
         tripListView = (ListView) findViewById(R.id.list_view_trips);
+        tripListView.setVisibility(View.GONE);
+        noTrips = (TextView)findViewById(R.id.textView_no_trips);
+        noTrips.setVisibility(View.GONE);
         dbManager = new TripDBManager(this);
         populateListView();
     }
@@ -62,20 +63,25 @@ public class TripManagerActivity
         super.onStart();
         navigationView.getMenu().getItem(Constants.SP_HOME).setChecked(false);
         navigationView.getMenu().getItem(Constants.SP_TRIPS).setChecked(true);
-        navigationView.getMenu().getItem(Constants.SP_SETTINGS).setChecked(false);
-        navigationView.getMenu().getItem(Constants.SP_ABOUT).setChecked(false);
     }
 
     private void populateListView(){
         tripList = dbManager.getAllTrips();
-        final TripListViewAdapter tripAdapter = new TripListViewAdapter(this.getBaseContext(), R.layout.listview_item_layout ,tripList);
-        tripListView.setAdapter(tripAdapter);
-        tripAdapter.setNotifyOnChange(true);
-        tripAdapter.notifyDataSetChanged();
-        TripListViewClickListeners clickListener = new TripListViewClickListeners(this,dbManager,tripAdapter);
-        tripListView.setOnItemClickListener(clickListener);
-        tripListView.setOnItemLongClickListener(clickListener);
-        tripListView.setOnItemSelectedListener(clickListener);
+        if(tripList.isEmpty()){
+            noTrips.setVisibility(View.VISIBLE);
+            tripListView.setVisibility(View.GONE);
+        } else {
+            noTrips.setVisibility(View.GONE);
+            tripListView.setVisibility(View.VISIBLE);
+            final TripListViewAdapter tripAdapter = new TripListViewAdapter(this.getBaseContext(), R.layout.listview_item_layout, tripList);
+            tripListView.setAdapter(tripAdapter);
+            tripAdapter.setNotifyOnChange(true);
+            tripAdapter.notifyDataSetChanged();
+            TripListViewClickListeners clickListener = new TripListViewClickListeners(this, dbManager, tripAdapter);
+            tripListView.setOnItemClickListener(clickListener);
+            tripListView.setOnItemLongClickListener(clickListener);
+            tripListView.setOnItemSelectedListener(clickListener);
+        }
     }
 
     private FloatingActionButton createFAB(){
@@ -178,6 +184,7 @@ public class TripManagerActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view_trip);
         navigationView.setNavigationItemSelectedListener(new ClickHandlerNavigationDrawer(TripManagerActivity.this, this, drawer));
+        navigationView.getMenu().getItem(Constants.SP_HOME).setChecked(true);
 
     }
 

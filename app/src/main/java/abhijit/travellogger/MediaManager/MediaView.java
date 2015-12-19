@@ -1,23 +1,23 @@
-package abhijit.travellogger.RecyclerView;
+package abhijit.travellogger.MediaManager;
 
 import java.io.File;
 
 import abhijit.travellogger.ApplicationUtility.Helper;
-import abhijit.travellogger.RecyclerView.Views.AudioView;
-import abhijit.travellogger.RecyclerView.Views.ImageView;
-import abhijit.travellogger.RecyclerView.Views.NoteView;
-import abhijit.travellogger.RecyclerView.Views.VideoView;
+import abhijit.travellogger.MediaManager.Views.AudioView;
+import abhijit.travellogger.MediaManager.Views.ImageView;
+import abhijit.travellogger.MediaManager.Views.NoteView;
+import abhijit.travellogger.MediaManager.Views.VideoView;
 
 /*
  * Created by abhijit on 11/20/15.
  */
-public class ItemView {
+public class MediaView {
 
-    private RecyclerViewHolder itemHolder;
+    private MediaViewHolder itemHolder;
     private File itemFile;
 
-    public ItemView(RecyclerViewHolder recyclerViewHolder, File file) {
-        itemHolder = recyclerViewHolder;
+    public MediaView(MediaViewHolder mediaViewHolder, File file) {
+        itemHolder = mediaViewHolder;
         itemFile = file;
     }
 

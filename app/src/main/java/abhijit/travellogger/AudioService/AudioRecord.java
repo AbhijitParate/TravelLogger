@@ -20,6 +20,7 @@ import abhijit.travellogger.R;
 
 public class AudioRecord extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String TEMP_AUDIO = "temp_audio.aac";
     private ImageButton startButton;
     private ImageButton stopButton;
 
@@ -120,8 +121,15 @@ public class AudioRecord extends AppCompatActivity implements View.OnClickListen
                     isBRRegistered = false;
                 }
                 elapsedTime.setTextColor(Color.RED);
+                finishWithResultOk();
                 break;
         }
+    }
+
+    private void finishWithResultOk() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {

@@ -31,12 +31,10 @@ public class TripDAO {
         return db.update(TripsDBHelper.TABLE_NAME, contentValues, TripsDBHelper.COL_ID + "=?", new String[]{trip.getTripId() + ""}) > 0;
     }
 
-    // delete will delete the ProductItem based on Title.
     public boolean deleteTrip(Trip trip) {
         return db.delete(TripsDBHelper.TABLE_NAME, TripsDBHelper.COL_ID + "=?", new String[]{trip.getTripId() + ""}) > 0;
     }
 
-    // get Product item by id
     public Trip getTrip(long id) {
         Trip trip = null;
         Cursor c = db.query(true, TripsDBHelper.TABLE_NAME, TripsDBHelper.ALL_COLUMNS, TripsDBHelper.COL_ID + "=?", new String[]{id + ""}, null, null, null, null, null);

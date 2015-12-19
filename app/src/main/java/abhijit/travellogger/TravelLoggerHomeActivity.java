@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -22,25 +23,17 @@ import java.io.File;
 import abhijit.travellogger.ApplicationUtility.Constants;
 import abhijit.travellogger.ApplicationUtility.FABBuilder;
 import abhijit.travellogger.ApplicationUtility.FileGenerator;
-import abhijit.travellogger.ApplicationUtility.Helper;
 import abhijit.travellogger.ApplicationUtility.InitiateApplication;
 import abhijit.travellogger.CamcorderService.CaptureVideo;
-import abhijit.travellogger.CameraService.CaptureImage;
 import abhijit.travellogger.ClickHandlers.ClickHandlerNavigationDrawer;
-import abhijit.travellogger.GPSService.AddressService;
-import abhijit.travellogger.GPSService.GPSService;
 import abhijit.travellogger.GalleryService.GalleryImage;
-import abhijit.travellogger.RecyclerView.RecyclerViewAdapter;
-import abhijit.travellogger.RecyclerView.SwipeHandlerForRecyclerView;
-import abhijit.travellogger.TripManager.TripManagerActivity;
+import abhijit.travellogger.MediaManager.MediaViewAdapter;
+import abhijit.travellogger.MediaManager.SwipeHandlerForRecyclerView;
 
-public class TravelLoggerHomeActivity
-        extends AppCompatActivity
-//        implements NavigationView.OnNavigationItemSelectedListener
-{
+public class TravelLoggerHomeActivity extends AppCompatActivity {
     //RecyclerView
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter viewAdapter;
+    private MediaViewAdapter viewAdapter;
 
     //for Camera Intent
     private static final int ACTIVITY_START_CAMERA_APP = 1;
@@ -56,13 +49,15 @@ public class TravelLoggerHomeActivity
 
     //Cache
     private static LruCache<String, Bitmap> imageCache ;
-
+    private File[] mediaFiles;
     //Floating action button
     private FABBuilder FAB;
     private Toolbar toolbar;
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    TextView noMediaText;
+    boolean isFABOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +68,7 @@ public class TravelLoggerHomeActivity
         FAB = new FABBuilder(TravelLoggerHomeActivity.this, this);
         FAB.build();
         buildNavDrawer();
-//        InitiateApplication.checkAppPermissions(TravelLoggerHomeActivity.this);
         buildRecyclerView();
-        ToastGPS();
     }
 
     @Override
@@ -83,8 +76,6 @@ public class TravelLoggerHomeActivity
         super.onStart();
         navigationView.getMenu().getItem(Constants.SP_HOME).setChecked(true);
         navigationView.getMenu().getItem(Constants.SP_TRIPS).setChecked(false);
-        navigationView.getMenu().getItem(Constants.SP_SETTINGS).setChecked(false);
-        navigationView.getMenu().getItem(Constants.SP_ABOUT).setChecked(false);
     }
 
     public void buildNavDrawer(){
@@ -98,12 +89,14 @@ public class TravelLoggerHomeActivity
                         R.string.navigation_drawer_close){
                     public void onDrawerClosed(View view) {
                         super.onDrawerClosed(view);
+                        FAB.Close();
                         FAB.getFAB().setVisibility(View.VISIBLE);
 
                     }
 
                     public void onDrawerOpened(View drawerView) {
                         super.onDrawerOpened(drawerView);
+                        FAB.Close();
                         FAB.getFAB().setVisibility(View.INVISIBLE);
                     }
                 };
@@ -115,30 +108,29 @@ public class TravelLoggerHomeActivity
         navigationView.getMenu().getItem(Constants.SP_HOME).setChecked(true);
     }
 
+    FileGenerator fileGenerator;
+
     private void buildRecyclerView(){
         InitiateApplication.checkDirectoryStructure(this);
-        FileGenerator fileGenerator = new FileGenerator();
-        File[] mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
-
+        fileGenerator = new FileGenerator();
+        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+        noMediaText = (TextView) findViewById(R.id.textview_no_media);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        viewAdapter = new RecyclerViewAdapter(mediaFiles);
+        viewAdapter = new MediaViewAdapter(mediaFiles);
         recyclerView.setAdapter(viewAdapter);
         // To add swipe feature
         SwipeHandlerForRecyclerView.create(this, recyclerView).attachToRecyclerView(recyclerView);
-    }
 
-    private void ToastGPS(){
-        GPSService gpsService = new GPSService(this);
-        if(gpsService.canGetLocation()){
-            if(gpsService.isLocationAvailable()){
-                String address = AddressService.getLocationName(this, gpsService.getLocation());
-                Toast.makeText(this, "Address: " + address, Toast.LENGTH_LONG).show();
-            }
+        if(mediaFiles.length != 0){
+            noMediaText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
         } else {
-            gpsService.showSettingsAlert();
+            noMediaText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
         }
+        recyclerView.scrollToPosition(0);
     }
 
     @Override
@@ -150,13 +142,25 @@ public class TravelLoggerHomeActivity
     @Override
     public void onResume(){
         super.onResume();
-        viewAdapter.notifyDataSetChanged();
+        mediaFiles = fileGenerator.getMediaFiles(InitiateApplication.getAppFolder());
+        if(mediaFiles.length != 0) {
+            noMediaText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            viewAdapter.updateList(mediaFiles);
+        } else {
+            noMediaText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }
+        recyclerView.scrollToPosition(0);
     }
 
     @Override
     public void onBackPressed() {
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if(isFABOpen) {
+            FAB.Close();
         } else {
             super.onBackPressed();
         }
@@ -191,36 +195,24 @@ public class TravelLoggerHomeActivity
             case ACTIVITY_START_CAMERA_APP :
                 switch (resultCode) {
                     case RESULT_OK :
-                        String sourceImageFilePath = InitiateApplication.getAppFolderTemp() + "/" + CaptureImage.TEMP_IMAGE;
-                        File imageSource = new File(sourceImageFilePath);
-                        String destinationImageFileName = "IMAGE_" + Helper.getTimeStamp() + ".jpg" ;
-                        File imageDestination = new File(InitiateApplication.getAppFolderCamera() , destinationImageFileName);
-                        if(GalleryImage.CopyFiles(imageSource,imageDestination)){
-                            viewAdapter.addItem(0,imageDestination);
-                            Toast.makeText(this, "Image saved successfully." + imageDestination.getAbsolutePath() , Toast.LENGTH_SHORT).show();
+                        File imageFile = (File) data.getExtras().get("media");
+                        if (imageFile != null) {
+                            viewAdapter.addItem(0,imageFile);
+                            Toast.makeText(this, "Image saved successfully." + imageFile.getAbsolutePath() , Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case RESULT_CANCELED:
-                        String imageFilePath = InitiateApplication.getAppFolderTemp() + "/" + CaptureImage.TEMP_IMAGE;
-                        imageSource = new File(imageFilePath);
-                        imageSource.delete();
-                        Toast.makeText(this, "Camera canceled.", Toast.LENGTH_SHORT).show();
-                        break;
                     default:
-                        Toast.makeText(this, "Camera failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Camera canceled.", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
             case ACTIVITY_START_VIDEO_CAMERA_APP :
                 switch (resultCode) {
                     case RESULT_OK :
-                        String sourceVideoFilePath = InitiateApplication.getAppFolderTemp() + "/" + CaptureVideo.TEMP_VIDEO;
-                        File videoSource = new File(sourceVideoFilePath);
-                        String destinationVideoFileName = "VIDEO_" + Helper.getTimeStamp() + ".mp4" ;
-                        File videoDestination = new File(InitiateApplication.getAppFolderVideo() , destinationVideoFileName);
-                        if(GalleryImage.CopyFiles(videoSource,videoDestination)){
-                            viewAdapter.addItem(0,videoDestination);
-                            Toast.makeText(this, "Video saved successfully." + videoDestination.getAbsolutePath() , Toast.LENGTH_SHORT).show();
+                        File videoFile = (File) data.getExtras().get("media");
+                        if (videoFile != null) {
+                            viewAdapter.addItem(0,videoFile);
+                            Toast.makeText(this, "Video saved successfully." + videoFile.getAbsolutePath() , Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case RESULT_CANCELED:
@@ -239,11 +231,8 @@ public class TravelLoggerHomeActivity
                     case RESULT_OK :
                         Toast.makeText(this, "Video saved successfully.", Toast.LENGTH_SHORT).show();
                         break;
-                    case RESULT_CANCELED:
-                        Toast.makeText(this, "Recording canceled.", Toast.LENGTH_SHORT).show();
-                        break;
                     default:
-                        Toast.makeText(this, "Recording failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Recording canceled.", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -253,7 +242,6 @@ public class TravelLoggerHomeActivity
                         File imageFile = GalleryImage.saveGalleryMedia(data, "IMAGE");
                         viewAdapter.addItem(0, imageFile);
                         Toast.makeText(this, "Image imported successfully.", Toast.LENGTH_SHORT).show();
-//                        Toast.makeText(this,data.getData().toString(), Toast.LENGTH_SHORT).show();
                         break;
                     case RESULT_CANCELED:
                         Toast.makeText(this, "Image selection canceled.", Toast.LENGTH_SHORT).show();

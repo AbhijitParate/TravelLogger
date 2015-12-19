@@ -48,7 +48,7 @@ public class ImageLoaderAsyncTask extends AsyncTask<File, Void, Bitmap> {
         if(bitmap != null && imageViewWeakReference != null) {
             ImageView imageView = imageViewWeakReference.get();
             //Uncomment this to use async task
-//            ImageLoaderAsyncTask bitmapWorkerTask = RecyclerViewAdapter.getImageLoaderTask(imageView);
+//            ImageLoaderAsyncTask bitmapWorkerTask = MediaViewAdapter.getImageLoaderTask(imageView);
 //            if(this == bitmapWorkerTask && imageView != null){
 //                imageView.setImageBitmap(bitmap);
 //            }

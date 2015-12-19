@@ -15,18 +15,17 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
         android:screenOrientation="portrait"
-        >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".TravelLoggerHomeActivity"
             android:label="@string/title_activity_travel_logger_home"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -34,25 +33,23 @@
             android:name=".TripManager.TripManagerActivity"
             android:label="@string/title_activity_trip_manager"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AudioService.AudioRecord"
             android:label="@string/title_activity_audio_record"
             android:launchMode="singleTask"
             android:persistent="true"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".AudioService.AudioRecorderService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".NotesService.NotesActivity"
-            android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".NotesService.NotesActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".WidgetHandler.TLWidgetProvider"
@@ -72,12 +69,21 @@
 
         <activity
             android:name=".SplashScreen.SplashScreenActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".CameraService.EditImageActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity android:name=".CamcorderService.EditVideoActivity" />
+        <activity android:name=".AudioService.EditAudioActivity" />
+        <activity android:name=".NotesService.EditNoteActivity" />
+        <activity android:name=".GalleryService.EditGallery">
+
         </activity>
     </application>
 

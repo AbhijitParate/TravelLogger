@@ -1,4 +1,4 @@
-package abhijit.travellogger.RecyclerView;
+package abhijit.travellogger.MediaManager;
 
 /*
  * Created by abhijit on 10/27/15.
@@ -9,17 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import abhijit.travellogger.ApplicationUtility.FileGenerator;
+import abhijit.travellogger.ApplicationUtility.Constants;
 import abhijit.travellogger.ApplicationUtility.Helper;
-import abhijit.travellogger.ApplicationUtility.InitiateApplication;
+import abhijit.travellogger.ApplicationUtility.TravelLogger;
 import abhijit.travellogger.R;
+import abhijit.travellogger.SharedPreferencesHandler;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+public class MediaViewAdapter extends RecyclerView.Adapter<MediaViewHolder> {
 
     //1. Mime types for view
     private static final int MIME_TYPE_INVALID  = 0;
@@ -33,12 +37,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
     }
 
     List<File> mediaList ;
-//    private final Context context;
 
     //Receive data from mainActivity
-    public RecyclerViewAdapter(File[] folderFiles){
+    public MediaViewAdapter(File[] folderFiles){
         mediaList = new LinkedList<>(Arrays.asList(folderFiles));
-//        context = mainContext;
     }
 
     //3 return mimetypes from the list of files
@@ -67,20 +69,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
 
     //4 assign view to view holder according to mime type
     @Override
-    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MediaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        RecyclerViewHolder recyclerViewHolder;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layouts, parent, false);
-        recyclerViewHolder = new RecyclerViewHolder(view);
-        return recyclerViewHolder;
+        MediaViewHolder mediaViewHolder;
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_layouts, parent, false);
+        mediaViewHolder = new MediaViewHolder(view);
+        return mediaViewHolder;
     }
 
     //5. bind view to viewHolder
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(MediaViewHolder holder, int position) {
         File mediaFile = mediaList.get(position);
-        ItemView itemView = new ItemView(holder, mediaFile);
-        itemView.setItemHolder();
+        MediaView mediaView = new MediaView(holder, mediaFile);
+        mediaView.setItemHolder();
+    }
+
+    public void updateList(File[] mediaFiles){
+        mediaList = new LinkedList<>(Arrays.asList(mediaFiles));
+        notifyDataSetChanged();
     }
 
     public void deleteItem(int position) {
@@ -89,8 +96,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
     }
 
     public void addItem(int position, File mediaFile ){
-//        FileGenerator fileGenerator = new FileGenerator();
-//        mediaList = new LinkedList<>(Arrays.asList(fileGenerator.getMediaFiles(InitiateApplication.getAppFolder())));
         mediaList.add(position, mediaFile);
         notifyItemInserted(position);
     }

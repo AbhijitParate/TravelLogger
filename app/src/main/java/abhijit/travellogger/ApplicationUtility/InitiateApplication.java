@@ -120,7 +120,7 @@ public class InitiateApplication {
                 Toast.makeText(context, "Failed to create Audio Directory.", Toast.LENGTH_SHORT).show();
                 return false;
             default:
-                Toast.makeText(context, "Directory structure available.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Directory structure available.", Toast.LENGTH_SHORT).show();
 
         }
         return true;

@@ -1,4 +1,4 @@
-package abhijit.travellogger.RecyclerView;
+package abhijit.travellogger.MediaManager;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
@@ -7,8 +7,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Toast;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.util.List;
+
+import abhijit.travellogger.ApplicationUtility.TravelLogger;
 
 /*
  * Created by abhijit on 11/19/15.
@@ -27,7 +31,7 @@ public class SwipeHandlerForRecyclerView {
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
 
                 final int itemPosition = viewHolder.getAdapterPosition();
-                final RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                final MediaViewAdapter adapter = (MediaViewAdapter) recyclerView.getAdapter();
 
                 if(direction == ItemTouchHelper.LEFT){
                     Toast.makeText(context.getApplicationContext(), "Left swipe", Toast.LENGTH_SHORT).show();
@@ -44,7 +48,13 @@ public class SwipeHandlerForRecyclerView {
                             @Override
                             public void onDismissed(Snackbar snackbar, int event) {
                                 if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT){
+                                    String fileName = FilenameUtils.getBaseName(fileToDelete.getName());
+                                    MediaDBManager mediaDBManager = new MediaDBManager(TravelLogger.getAppContext());
+                                    Media mediaToDelete = new Media();
+                                    mediaToDelete.setFileName(fileName);
+                                    mediaDBManager.deleteMedia(mediaToDelete);
                                     fileToDelete.delete();
+
                                     Toast.makeText(context.getApplicationContext(), "File deleted successfully.", Toast.LENGTH_SHORT).show();
                                 }
                             }

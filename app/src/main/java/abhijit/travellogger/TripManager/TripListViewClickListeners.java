@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import abhijit.travellogger.ApplicationUtility.Constants;
+import abhijit.travellogger.SharedPreferencesHandler;
+
 /*
  * Created by abhijit on 12/7/15.
  */
@@ -27,7 +30,11 @@ public class TripListViewClickListeners implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(view.getContext(), "Item clicked.", Toast.LENGTH_SHORT).show();
+        SharedPreferencesHandler.setSharedPref(Constants.SP_TRIP_NAME, tripAdapter.getItem(position).getTitle());
+        Toast.makeText(view.getContext()
+                , "Trip changed to " + tripAdapter.getItem(position).getTitle() + "."
+                , Toast.LENGTH_SHORT).show();
+        tripAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -40,6 +47,10 @@ public class TripListViewClickListeners implements
         deleteConfirmationDialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                String tripName = SharedPreferencesHandler.getSharedPref(Constants.SP_TRIP_NAME);
+                if(tripAdapter.getItem(viewPosition).getTitle().equals(tripName)){
+                    SharedPreferencesHandler.setSharedPref(Constants.SP_TRIP_NAME, null);
+                }
                 dbManager.deleteTrip(tripAdapter.getItem(viewPosition));
                 Toast.makeText(appContext, "Trip '" + tripAdapter.getItem(viewPosition).getTitle() + "' deleted.", Toast.LENGTH_LONG).show();
                 tripAdapter.remove(tripAdapter.getItem(viewPosition));

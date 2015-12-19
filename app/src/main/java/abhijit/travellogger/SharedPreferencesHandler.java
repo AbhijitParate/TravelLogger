@@ -8,12 +8,12 @@ import abhijit.travellogger.ApplicationUtility.TravelLogger;
 /*
  * Created by abhijit on 12/9/15.
  */
-public class ShardedPrefHandler {
+public class SharedPreferencesHandler {
 
     public static String TLPreferences = "TravelLoggerData";
 
     public static String getSharedPref(String prefKey) {
-        String SPValue = "n/a";
+        String SPValue;
         SharedPreferences TLData = TravelLogger.getAppContext().getSharedPreferences(TLPreferences, Context.MODE_PRIVATE);
         SPValue = TLData.getString(prefKey, null);
         return SPValue;

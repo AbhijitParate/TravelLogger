@@ -48,7 +48,6 @@ public class AudioRecorderService extends Service {
     }
 
     public IBinder onBind(Intent intent) {
-//        TODO: Return the communication channel to the service.
 //        throw new UnsupportedOperationException("Not yet implemented");
         return null;
     }
@@ -121,24 +120,13 @@ public class AudioRecorderService extends Service {
     }
 
     public void startRecording() throws IOException {
-        String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
-        String audioName = "AUDIO_";// + timeStamp +"_";
-
-        File appFolderAudio = InitiateApplication.getAppFolderAudio();
-
-        try {
-            audioFile = File.createTempFile(audioName, ".aac", appFolderAudio);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        audioFile =new File(InitiateApplication.getAppFolderTemp(), AudioRecord.TEMP_AUDIO);
         recorder = new MediaRecorder();
         recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         recorder.setOutputFile(audioFile.getAbsolutePath());
-
         recorder.prepare();
         recorder.start();
         startTime = SystemClock.elapsedRealtime();

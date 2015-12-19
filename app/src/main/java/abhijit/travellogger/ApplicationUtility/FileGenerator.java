@@ -1,11 +1,20 @@
 package abhijit.travellogger.ApplicationUtility;
 
+import android.util.Log;
+
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
+import abhijit.travellogger.MediaManager.Media;
+import abhijit.travellogger.MediaManager.MediaDBManager;
+import abhijit.travellogger.SharedPreferencesHandler;
 
 /*
  * Created by abhijit on 11/14/15.
@@ -24,7 +33,28 @@ public class FileGenerator {
         resultList = new ArrayList<>();
         listFiles(directory);
         removeUnwanted();
-        return resultList;
+        return removeNonTripMedia();
+//        return resultList;
+    }
+
+    private List<File> removeNonTripMedia(){
+        String tripName = SharedPreferencesHandler.getSharedPref(Constants.SP_TRIP_NAME);
+        MediaDBManager mediaManager = new MediaDBManager(TravelLogger.getAppContext());
+        List<Media> medias = mediaManager.getAllMediaForTrip(tripName);
+//        Iterator<File> mediaFileIterator = resultList.iterator();
+        List<File> newResultList = new ArrayList<>();
+        for (Media media : medias) {
+            Iterator<File> mediaFileIterator = resultList.iterator();
+            while (mediaFileIterator.hasNext()) {
+                File file = mediaFileIterator.next();
+                if (media.getFileName().equals(FilenameUtils.getBaseName(file.getName()))) {
+//                    Log.d("File removed", file.getName());
+//                    mediaFileIterator.remove();
+                    newResultList.add(file);
+                }
+            }
+        }
+        return newResultList;
     }
 
     private File[] sortFiles(File[] fileImagesDir){
@@ -50,7 +80,7 @@ public class FileGenerator {
         }
     }
 
-    public void removeUnwanted(){
+    private void removeUnwanted(){
         Iterator<File> iterator = resultList.iterator();
         while (iterator.hasNext()) {
             File f = iterator.next();

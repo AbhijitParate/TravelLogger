@@ -8,6 +8,11 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import abhijit.travellogger.ApplicationUtility.TravelLogger;
+import abhijit.travellogger.AudioService.EditAudioActivity;
+import abhijit.travellogger.CamcorderService.EditVideoActivity;
+import abhijit.travellogger.CameraService.EditImageActivity;
+import abhijit.travellogger.NotesService.EditNoteActivity;
 import abhijit.travellogger.R;
 import abhijit.travellogger.TravelLoggerHomeActivity;
 
@@ -16,22 +21,39 @@ import abhijit.travellogger.TravelLoggerHomeActivity;
  */
 public class TLWidgetProvider extends AppWidgetProvider {
 
-    public static String ACTION_CAMERA = "Camera";
-    public static String ACTION_CAMCORDER = "Camcorder";
-    public static String ACTION_RECORDER = "Audio Recorder";
-    public static String ACTION_NOTES = "Notes";
+    public static final String ACTION_CAMERA = "Camera";
+    public static final String ACTION_CAMCORDER = "Camcorder";
+    public static final String ACTION_RECORDER = "Audio Recorder";
+    public static final String ACTION_NOTES = "Notes";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (   intent.getAction().equals(ACTION_CAMERA)
-            || intent.getAction().equals(ACTION_CAMCORDER)
-            || intent.getAction().equals(ACTION_RECORDER)
-            || intent.getAction().equals(ACTION_NOTES)
-//            || intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                ) {
-            Toast.makeText(context, intent.getAction()+" button clicked." , Toast.LENGTH_SHORT).show();
+        Intent tempIntent;
+
+        switch (intent.getAction()){
+            case ACTION_CAMERA:
+                tempIntent = new Intent(context, EditImageActivity.class);
+                tempIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(tempIntent);
+                break;
+            case ACTION_CAMCORDER:
+                tempIntent = new Intent(context, EditVideoActivity.class);
+                tempIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(tempIntent);
+                break;
+            case ACTION_RECORDER:
+                tempIntent = new Intent(context, EditAudioActivity.class);
+                tempIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(tempIntent);
+                break;
+            case ACTION_NOTES:
+                tempIntent = new Intent(context, EditNoteActivity.class);
+                tempIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(tempIntent);
+                break;
         }
+
     }
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

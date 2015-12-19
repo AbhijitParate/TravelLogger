@@ -1,13 +1,15 @@
 package abhijit.travellogger.ApplicationUtility;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,5 +43,18 @@ public class Helper {
     public static String getTimeStamp(){
         SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
         return s.format(new Date());
+    }
+
+    public static boolean checkPermission(String permission, Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (TravelLogger.getAppContext().checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                if (activity.shouldShowRequestPermissionRationale(permission)) {
+                    activity.requestPermissions(new String[]{permission}, 0);
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

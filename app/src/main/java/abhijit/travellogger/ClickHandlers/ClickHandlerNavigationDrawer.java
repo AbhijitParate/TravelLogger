@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import abhijit.travellogger.ApplicationUtility.Constants;
 import abhijit.travellogger.R;
-import abhijit.travellogger.ShardedPrefHandler;
+import abhijit.travellogger.SharedPreferencesHandler;
 import abhijit.travellogger.TravelLoggerHomeActivity;
 import abhijit.travellogger.TripManager.TripManagerActivity;
 
@@ -41,7 +41,7 @@ public class ClickHandlerNavigationDrawer
         if (id == R.id.nav_trips) {
             Toast.makeText(activityContext, "Trips", Toast.LENGTH_SHORT).show();
             item.setChecked(true);
-            ShardedPrefHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
+            SharedPreferencesHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
             Intent tripManager= new Intent(activityContext,TripManagerActivity.class);
             tripManager.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //            tripManager.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -50,17 +50,11 @@ public class ClickHandlerNavigationDrawer
         } else if (id == R.id.nav_home) {
             Toast.makeText(activityContext, "Home", Toast.LENGTH_SHORT).show();
             item.setChecked(true);
-            ShardedPrefHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
+            SharedPreferencesHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
             Intent tripManager= new Intent(activityContext,TravelLoggerHomeActivity.class);
             tripManager.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             tripManager.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(tripManager);
-        } else if (id == R.id.nav_settings) {
-            Toast.makeText(activityContext, "Settings", Toast.LENGTH_SHORT).show();
-            ShardedPrefHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
-        } else if (id == R.id.nav_about) {
-            Toast.makeText(activityContext, "About", Toast.LENGTH_SHORT).show();
-            ShardedPrefHandler.setSharedPref(Constants.SP_NAVIGATION_ACTIVITY, "Trips");
         }
         activityDrawer.closeDrawer(GravityCompat.START);
         return true;

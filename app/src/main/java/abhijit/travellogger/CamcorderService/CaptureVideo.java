@@ -16,7 +16,7 @@ public class CaptureVideo {
 
     public static String TEMP_VIDEO = "camera_video.mp4";
 
-    public static Intent takeVideo(){
+    public static Intent prepareCamcorderIntent(){
         Intent videoCameraIntent = new Intent();
         videoCameraIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
         File videoFile = new File(InitiateApplication.getAppFolderTemp(), TEMP_VIDEO);
